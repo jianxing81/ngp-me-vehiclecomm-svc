@@ -1,0 +1,552 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/JobDispatchEvent.schema.json",
+  "title": "JobDispatchEvent",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.jobdispatchevent.JobDispatchEvent",
+  "description": "Job event from Job Dispatch Service",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "JobDispatchEvent"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eventDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eventName": {
+      "$ref": "#/definitions/jobEventTypeEnum"
+    },
+    "messageId": {
+      "type": "integer"
+    },
+    "jobNo": {
+      "type": "string"
+    },
+    "ivdNo": {
+      "type": "string"
+    },
+    "ipAddress": {
+      "type": "string"
+    },
+    "driverId": {
+      "type": "string"
+    },
+    "vehicleId": {
+      "type": "string"
+    },
+    "messageSource": {
+      "type": "string"
+    },
+    "ackFlag": {
+      "type": "boolean"
+    },
+    "dispatchLevel": {
+      "type": "integer"
+    },
+    "broadcastMsg": {
+      "type": "string"
+    },
+    "jobType": {
+      "type": "string"
+    },
+    "paymentMethod": {
+      "type": "string"
+    },
+    "dispatchMethod": {
+      "type": "integer"
+    },
+    "priorityCustomer": {
+      "type": "boolean"
+    },
+    "autoAcceptSuspend": {
+      "type": "boolean"
+    },
+    "autoAcceptFlag": {
+      "type": "integer"
+    },
+    "promoWaiveBookingFee": {
+      "type": "string"
+    },
+    "pickupTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pickupLat": {
+      "type": "number",
+      "format": "double"
+    },
+    "pickupLng": {
+      "type": "number",
+      "format": "double"
+    },
+    "pickupAddr": {
+      "type": "string"
+    },
+    "pickupPt": {
+      "type": "string"
+    },
+    "jobStatus": {
+      "$ref": "#/definitions/jobStatusEnum"
+    },
+    "arrivalRequired": {
+      "type": "integer"
+    },
+    "bookingChannel": {
+      "type": "string"
+    },
+    "bookingFee": {
+      "type": "number",
+      "format": "double"
+    },
+    "comfortProtectPremium": {
+      "type": "number",
+      "format": "double"
+    },
+    "offerableDevice": {
+      "type": "string"
+    },
+    "destAddr": {
+      "type": "string"
+    },
+    "fareType": {
+      "type": "integer"
+    },
+
+    "jobSurgeSigns": {
+      "type": "string"
+    },
+    "levy": {
+      "type": "number",
+      "format": "double"
+    },
+    "levyWaiver": {
+      "type": "number",
+      "format": "double"
+    },
+    "jobMeritPoint": {
+      "type": "string"
+    },
+    "deposit": {
+      "type": "number",
+      "format": "double"
+    },
+    "noShowTiming": {
+      "type": "integer"
+    },
+    "accountId": {
+      "type": "string"
+    },
+    "companyName": {
+      "type": "string"
+    },
+    "passengerName": {
+      "type": "string"
+    },
+    "passengerContactNumber": {
+      "type": "string"
+    },
+    "destLat": {
+      "type": "number",
+      "format": "double"
+    },
+    "destLng": {
+      "type": "number",
+      "format": "double"
+    },
+    "destPt": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "waitingPoint": {
+      "type": "string"
+    },
+    "remark": {
+      "type": "string"
+    },
+    "cpFreeInsurance": {
+      "type": "string"
+    },
+    "productId": {
+      "type": "string"
+    },
+    "tariffInfo": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TariffInfo"
+      }
+    },
+    "extraStopsInfo": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ExtraStopsInfo"
+      }
+    },
+    "partnerDiscountType": {
+      "type": "string"
+    },
+    "partnerDiscountValue": {
+      "type": "string"
+    },
+    "partnerOrderId": {
+      "type": "string"
+    },
+    "multiStop": {
+      "$ref": "#/definitions/MultiStop"
+    },
+    "cabchargePolicy": {
+      "$ref": "#/definitions/CabchargePolicy"
+    },
+    "newGst": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "newGstIncl": {
+      "type": "integer"
+    },
+    "newGstEffectiveDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "bookingDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+
+    "newAdminValue": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "newAdminDiscountVal": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "newAdminType": {
+      "type": "integer"
+    },
+    "newAdminGstMsg": {
+      "type": "integer"
+    },
+    "newAdminEffectiveDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "currentGst": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "currentGstIncl": {
+      "type": "integer"
+    },
+    "currentAdminVal": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "currentAdminDiscountVal": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "offerTimeout": {
+      "type": "number",
+      "format": "utc-millisec"
+    },
+    "currentAdminType": {
+      "type": "integer"
+    },
+    "currentAdminGstMsg": {
+      "type": "integer"
+    },
+    "sosFlag": {
+      "type": "boolean"
+    },
+    "isPremierAllowed": {
+      "type": "boolean"
+    },
+    "ccNumber": {
+      "type": "string"
+    },
+    "ccExpiry": {
+      "type": "string"
+    },
+    "promoCode": {
+      "type": "string"
+    },
+    "productType": {
+      "type": "string"
+    },
+    "productDesc": {
+      "type": "string"
+    },
+    "promoAmount": {
+      "type": "number",
+      "format": "double"
+    },
+    "loyaltyEnable": {
+      "type": "boolean"
+    },
+    "loyaltyAmount": {
+      "type": "number",
+      "format": "double"
+    },
+    "eta": {
+      "type": "integer"
+    },
+    "collectFare": {
+      "type": "boolean"
+    },
+    "autoAssignFlag": {
+      "type": "boolean"
+    },
+    "paymentPlus": {
+      "type": "string"
+    },
+    "enableCalloutButton": {
+      "type": "boolean"
+    },
+    "cbdFlag": {
+      "type": "boolean"
+    },
+    "cbdSurchargeAmount": {
+      "type": "number",
+      "format": "double"
+    },
+    "dynamicPriceIndicator": {
+      "type": "string"
+    },
+    "privateField": {
+      "type": "string"
+    },
+    "platformFeeItem": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PlatformFeeItem"
+      }
+    },
+    "extendedOfferDisplayTime": {
+      "type": "string"
+    },
+    "canReject": {
+      "type": "boolean"
+    },
+    "calloutStatus": {
+      "type": "integer"
+    },
+    "jobAssigned": {
+      "type": "boolean"
+    },
+    "routingCost": {
+      "type": "number",
+      "format": "double"
+    },
+    "autobid": {
+      "type": "boolean"
+    },
+    "alert": {
+      "type": "string"
+    },
+    "displayInterval": {
+      "type": "integer"
+    },
+    "additionalCharges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chargeId": {
+            "type": "integer"
+          },
+          "chargeType": {
+            "type": "string"
+          },
+          "chargeAmt": {
+            "type": "number"
+          },
+          "chargeThreshold": {
+            "type": "number"
+          },
+          "chargeUpperLimit": {
+            "type": "number"
+          },
+          "chargeLowerLimit": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "totalDistance": {
+      "type": "number",
+      "format": "double"
+    },
+    "tripDistance": {
+      "type": "integer"
+    },
+    "pickupDistance": {
+      "type": "integer"
+    },
+    "nettFare": {
+      "type": "number",
+      "format": "double"
+    }
+  },
+  "definitions": {
+    "jobEventTypeEnum": {
+      "enum": [
+        "JOB_MODIFY","CALLOUT_RESULT",
+        "MDT_ALIVE","LEVY_UPDATE",
+        "JOB_OFFER","STREET_JOB","JOB_CANCEL","JOB_CONFIRM"
+      ]
+    },
+    "jobStatusEnum": {
+      "enum": [
+        "NEW",
+        "PENDING",
+        "CONFIRMED",
+        "FAILED",
+        "ONBOARD",
+        "ARRIVAL",
+        "NO_SHOW",
+        "CANCELLED",
+        "COMPLETED",
+        "CANCELLED_UR",
+        "NO_SHOW_UR",
+        "CONFIRMING",
+        "NTA",
+        "MODIFY"
+      ]
+    },
+    "TariffInfo": {
+      "type": "object",
+      "properties": {
+        "tariffTypeCode": {
+          "type": "string"
+        },
+        "tariffUnit": {
+          "type": "integer"
+        },
+        "discountedTotal": {
+          "$ref": "#/definitions/DiscountedTotal"
+        }
+      }
+    },
+    "ExtraStopsInfo": {
+      "properties": {
+        "extraStopName": {
+          "type": "string"
+        },
+        "extraStopQty": {
+          "type": "integer"
+        },
+        "extraStopDetail": {
+          "type": "string"
+        }
+      }
+    },
+    "DiscountedTotal": {
+      "properties": {
+        "fare": {
+          "type": "number",
+          "format": "double"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    },
+    "MultiStop": {
+      "properties": {
+        "intermediateAddr": {
+          "type": "string"
+        },
+        "intermediateLat": {
+          "type": "number",
+          "format": "double"
+        },
+        "intermediateLng": {
+          "type": "number",
+          "format": "double"
+        },
+        "intermediatePt": {
+          "type": "string"
+        },
+        "intermediateZoneId": {
+          "type": "string"
+        }
+      }
+    },
+    "CabchargePolicy": {
+      "properties": {
+        "amountCap": {
+          "type": "number",
+          "format": "double"
+        },
+        "policyDetails": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PolicyDetails"
+          }
+        }
+      }
+    },
+    "PolicyDetails": {
+      "properties": {
+        "policyPickupLat": {
+          "type": "number",
+          "format": "double"
+        },
+        "policyPickupLng": {
+          "type": "number",
+          "format": "double"
+        },
+        "policyDestLat": {
+          "type": "number",
+          "format": "double"
+        },
+        "policyDestLng": {
+          "type": "number",
+          "format": "double"
+        },
+        "policyRadius": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "PlatformFeeItem": {
+      "properties": {
+        "platformFeeApplicability": {
+          "type": "string"
+        },
+        "thresholdLimit": {
+          "type": "number",
+          "format": "double"
+        },
+        "feeBelowThresholdLimit": {
+          "type": "number",
+          "format": "double"
+        },
+        "feeAboveThresholdLimit": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    }
+  },
+  "required": [
+    "offerableDevice",
+    "eventName"
+  ]
+}

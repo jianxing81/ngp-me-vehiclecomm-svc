@@ -1,0 +1,903 @@
+openapi: 3.0.3
+info:
+  title: Fleet Analytic Service API
+  version: 1.0.11
+servers:
+  - url: http://localhost:8080
+    description: Localhost
+tags:
+  - name: Driver Performance Service
+  - name: Demand Supply Statistic Service
+paths:
+  /v1.0/fleet-analytic/driver-performance:
+    get:
+      tags:
+        - Driver Performance Service
+      summary: Get driver performance by driver id
+      operationId: getDriverPerformance
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - name: driverId
+          in: query
+          description: Driver Id
+          required: true
+          schema:
+            type: string
+            pattern: '^\S+$'
+      responses:
+        '200':
+          description: Success
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/DriverPerformanceResponse"
+        '400':
+          $ref: "#/components/responses/400BadRequest"
+        '404':
+          $ref: "#/components/responses/404NotFound"
+        '500':
+          $ref: "#/components/responses/500InternalServerError"
+
+  /v1.0/fleet-analytic/driver-performance-history:
+    get:
+      tags:
+        - Driver Performance Service
+      summary: Get driver performance by driver id for range of date
+      operationId: getDriverPerformanceHistory
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - name: driverId
+          in: query
+          description: Driver Id
+          required: true
+          schema:
+            type: string
+            pattern: '^\S+$'
+        - name: startDate
+          in: query
+          description: Start date
+          required: true
+          schema:
+            type: string
+            example: "2024-04-19"
+        - name: endDate
+          in: query
+          description: End date
+          required: false
+          schema:
+            type: string
+            example: "2024-04-19"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverPerformanceHistoryResponse'
+        '400':
+          $ref: "#/components/responses/400BadRequest"
+        '500':
+          $ref: "#/components/responses/500InternalServerError"
+
+  /v1.0/fleet-analytic/realtime-dos/{zoneId}/latest:
+    get:
+      tags:
+        - Demand Supply Statistic Service
+      summary: Get real-time/near real-time demand on supply ratio
+      operationId: getRealTimeDoSByZone
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - in: path
+          name: zoneId
+          description: Zone ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RealTimeDoSResponse"
+        '400':
+          $ref: "#/components/responses/400BadRequest"
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/demand-supply-statistics:
+    get:
+      tags:
+        - Demand Supply Statistic Service
+      summary: Get demand supply statistic for all zones
+      operationId: getLatestDemandSupplyStatistics
+      parameters:
+        - in: header
+          name: X-User-Id
+          description: User ID for identification
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetListDemandSupplyStatisticResponse"
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                "$ref": '#/components/schemas/CommonErrorObject'
+              example:
+                {
+                  responseCode: "1",
+                  message: "Failed, invalid zoneId"
+                }
+        '404':
+          description: Excess demand not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CommonErrorObject"
+              example:
+                {
+                  responseCode: '404',
+                  message: "Not Found"
+                }
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/sync-vehicles:
+    post:
+      summary: "Sync vehicle info"
+      description: "Sync vehicle info"
+      tags:
+        - Demand Supply Statistic Service
+      operationId: syncVehicleInfoScheduler
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/cal-demand-supply:
+    post:
+      summary: "Calculate demand supply"
+      description: "Calculate demand supply"
+      tags:
+        - Demand Supply Statistic Service
+      operationId: calculateDemandSupplyStatisticsScheduler
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/reset-driver-performance:
+    post:
+      tags:
+        - Driver Performance Service
+      summary: Reset Driver Performance
+      operationId: resetDriverPerformance
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: "#/components/responses/400BadRequest"
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/cal-driver-performance-log:
+    post:
+      tags:
+        - Driver Performance Service
+      summary: Calculate Driver Performance log
+      operationId: calculateDriverPerformanceLog
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - in: query
+          name: numberOfDaysPast
+          description: Numbers of Days Past
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/recent-address/{type}:
+    get:
+      tags:
+        - Booking Analytic Service
+      summary: Get recent address ref
+      operationId: getRecentAddressRef
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - in: path
+          name: type
+          description: Type is pickup or dropoff
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: custOwner
+          description: Owner of customer. This field allows only 2 values (PRIME/CCPL). If custOwner has other values, the array of address ref in the response will be empty.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: phoneNo
+          description: Identifier for the phone number.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: customerId
+          description: Identifier for the customer.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          description: Amount of records to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - in: query
+          name: skip
+          description: Amount of records to skip.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/RecentAddressRefResponse"
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v1.0/fleet-analytic/frequent-address/{type}:
+    post:
+      tags:
+        - Booking Analytic Service
+      summary: Get frequent address
+      operationId: getFrequentAddress
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - in: path
+          name: type
+          description: Type is pickup or dropoff
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: custOwner
+          description: Owner of customer. This field allows only 2 values (PRIME/CCPL). If custOwner has other values, the array of address ref in the response will be empty.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: phoneNo
+          description: Identifier for the phone number.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: customerId
+          description: Identifier for the customer.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          description: Amount of records to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - in: query
+          name: skip
+          description: Amount of records to skip.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      requestBody:
+        description: Filter Requests
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/FilterRequest"
+      responses:
+        '200':
+          description: Success
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/FrequentAddressResponse"
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+
+  /v1.0/fleet-analytic/load-predict-time-zone:
+    post:
+      tags:
+        - Booking Analytic Service
+      summary: load predict time zone to cache
+      operationId: loadPredictTimeZone
+      responses:
+        '200':
+          description: Success
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+
+  /v1.0/fleet-analytic/last-booking:
+    get:
+      tags:
+        - Booking Analytic Service
+      summary: Get last booking by customer id, phone number and country code
+      operationId: getLastBooking
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+        - name: customerId
+          in: query
+          description: Customer Id
+          required: false
+          schema:
+            type: string
+        - name: phoneNo
+          in: query
+          description: Identifier for the phone number.
+          required: false
+          schema:
+            type: string
+        - name: countryCode
+          in: query
+          description: Phone Number
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/LastBookingResponse"
+        '400':
+          $ref: "#/components/responses/400BadRequest"
+        '404':
+          $ref: "#/components/responses/404NotFound"
+        '500':
+          $ref: "#/components/responses/500InternalServerError"
+  /v2.0/fleet-analytic/demand-supply-statistics:
+    get:
+      tags:
+        - Demand Supply Statistic Service
+      summary: Get demand supply statistic for all zones
+      operationId: getLatestDemandSupplyStatisticsV2
+      parameters:
+        - in: header
+          name: X-User-Id
+          description: User ID for identification
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetListDemandSupplyStatisticV2Response"
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                "$ref": '#/components/schemas/CommonErrorObject'
+              example:
+                {
+                  responseCode: "1",
+                  message: "Failed, invalid zoneId"
+                }
+        '404':
+          description: Excess demand not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CommonErrorObject"
+              example:
+                {
+                  responseCode: '404',
+                  message: "Not Found"
+                }
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+  /v2.0/fleet-analytic/cal-demand-supply:
+    post:
+      summary: "Calculate demand supply V2"
+      description: "Calculate demand supply V2"
+      tags:
+        - Demand Supply Statistic Service
+      operationId: calculateDemandSupplyStatisticsSchedulerV2
+      parameters:
+        - name: Traceparent
+          in: header
+          description: Traceparent
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: '#/components/responses/500InternalServerError'
+components:
+  schemas:
+    FilterRequest:
+      type: object
+      properties:
+        addressRefs:
+          type: array
+          items:
+            type: string
+          description: List of address references
+
+    ScheduleDemandSupplyStatisticResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Successful"
+        responseCode:
+          type: string
+          example: "0"
+        traceId:
+          type: string
+          example: 0de46b6fcbc8da83
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-07-21T17:32:28Z"
+    VehicleStatusLogResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Successful"
+        responseCode:
+          type: string
+          example: "0"
+        traceId:
+          type: string
+          example: 0de46b6fcbc8da83
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-07-21T17:32:28Z"
+
+    DriverPerformanceResponse:
+      type: object
+      properties:
+        driverId:
+          type: string
+          example: "SH150420"
+        acceptanceRate:
+          type: number
+          format: double
+          example: 1.1
+          default: 0.0
+        cancellationRate:
+          type: number
+          format: double
+          example: 1.1
+          default: 0.0
+        avgRating:
+          type: number
+          format: double
+          example: 1.0
+          default: 0.0
+        totalCompletedJobs:
+          type: number
+          format: integer
+          example: 1
+          default: 0
+
+    ExcessDemandResponse:
+      type: object
+      properties:
+        zoneId:
+          type: string
+          example: '1'
+        timestamp:
+          type: string
+          format: date-time
+          example: '2023-07-21T17:32:28Z'
+        excessDemand:
+          type: integer
+          format: int32
+          example: 1
+        responseCode:
+          type: string
+          example: 0
+        message:
+          type: string
+          example: Successful
+
+    RealTimeDoSResponse:
+      type: object
+      properties:
+        zoneId:
+          type: string
+          example: "1"
+        recentDemand:
+          type: integer
+          format: int32
+          example: 0
+        previousDemand:
+          type: integer
+          format: int32
+          example: 0
+        predictedDemand:
+          type: integer
+          format: int32
+          example: 0
+        supply:
+          type: integer
+          format: int32
+          example: 0
+        excessDemand:
+          type: integer
+          format: int32
+          example: 0
+        dosRatio:
+          type: number
+          format: double
+          example: 1.12
+        batchCounter:
+          type: integer
+          format: int32
+          example: 0
+    GetListDemandSupplyStatisticResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListDemandSupplyStatisticResponse'
+    GetListDemandSupplyStatisticV2Response:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListDemandSupplyStatisticV2Response'
+    ListDemandSupplyStatisticResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/DemandSupplyStatisticResponse'
+    ListDemandSupplyStatisticV2Response:
+      type: array
+      items:
+        $ref: '#/components/schemas/DemandSupplyStatisticV2Response'
+    DemandSupplyStatisticResponse:
+      type: object
+      properties:
+        zoneId:
+          type: string
+          example: "1"
+        recentDemand:
+          type: integer
+          format: int32
+          example: 0
+        previousDemand:
+          type: integer
+          format: int32
+          example: 0
+        predictedDemand:
+          type: integer
+          format: int32
+          example: 0
+        supply:
+          type: integer
+          format: int32
+          example: 0
+        excessDemand:
+          type: integer
+          format: int32
+          example: 0
+        dosRatio:
+          type: number
+          format: float
+          example: 1.2
+        batchCounter:
+          type: integer
+          format: int32
+          example: 0
+    DemandSupplyStatisticV2Response:
+      type: object
+      properties:
+        zoneId:
+          type: string
+          example: "1"
+        demand15:
+          type: integer
+          format: int32
+          example: 0
+        demand30:
+          type: integer
+          format: int32
+          example: 0
+        demand60:
+          type: integer
+          format: int32
+          example: 0
+        predictedDemand15:
+          type: integer
+          format: int32
+          example: 0
+        predictedDemand30:
+          type: integer
+          format: int32
+          example: 0
+        supply:
+          type: integer
+          format: int32
+          example: 0
+        dosRatio:
+          type: number
+          format: float
+          example: 1.2
+        excessDemand15:
+          type: integer
+          format: int32
+          example: 0
+        excessDemand30:
+          type: integer
+          format: int32
+          example: 0
+        previousDemand15:
+          type: integer
+          format: int32
+          example: 0
+        batchCounter:
+          type: integer
+          format: int32
+          example: 0
+        unmet15:
+          type: number
+          format: float
+          example: 1.2
+        previousUnmet15:
+          type: number
+          format: float
+          example: 1.2
+    RefreshDriverPerformanceResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Successful"
+        responseCode:
+          type: string
+          example: "0"
+        traceId:
+          type: string
+          example: "9ceb3afd9ab1db6341891a0af53dcd9d"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-11-01T15:50:20.500817+07:00"
+
+    LastBookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          example: 790000000000
+        lastBookingDate:
+          type: string
+          format: date-time
+          example: "2024-02-14T10:00:00Z"
+        customerId:
+          type: string
+          example: 77777
+        phoneNo:
+          type: string
+          example: 1111
+        countryCode:
+          type: string
+          example: 65
+    ErrorObject:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "sample error message"
+
+        code:
+          type: integer
+          example: "sample error code"
+
+    CommonErrorObject:
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "9ceb3afd9ab1db6341891a0af53dcd9d"
+
+        error:
+          $ref: "#/components/schemas/ErrorObject"
+
+        path:
+          type: string
+          example: "/sample-path"
+
+        timestamp:
+          type: string
+          example: "2023-05-17T06:47:53.094554Z"
+
+    RecentAddressRefResponse:
+      type: object
+      properties:
+        total:
+          type: number
+        skip:
+          type: number
+        limit:
+          type: number
+        data:
+          type: array
+          items:
+            type: string
+          description: Array of address ref
+    FrequentAddressResponse:
+      type: object
+      properties:
+        total:
+          type: number
+          example: 1
+        skip:
+          type: number
+          example: 0
+        limit:
+          type: number
+          example: 10
+        data:
+          type: array
+          items:
+            type: string
+            example: "72501"
+          description: Array of address ref
+
+    DriverPerformanceHistoryResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/DriverPerformanceHistoryData'
+
+    DriverPerformanceHistoryData:
+      type: object
+      properties:
+        driverId:
+          type: string
+          example: "0708981"
+        acceptanceRate:
+          type: number
+          format: double
+          example: 0.9
+          default: 0.0
+        cancellationRate:
+          type: number
+          format: double
+          example: 0.1
+          default: 0.0
+        confirmedRate:
+          type: number
+          format: double
+          example: 0.9
+          default: 0.0
+        avgRating:
+          type: number
+          format: double
+          example: 1.0
+          default: 0.0
+        totalCompletedJobs:
+          type: number
+          example: 1
+          default: 0
+        totalOfferedJobs:
+          type: number
+          example: 10
+          default: 0
+        totalBidJobs:
+          type: number
+          example: 10
+          default: 0
+        totalConfirmedJobs:
+          type: number
+          example: 10
+          default: 0
+        capturedDate:
+          type: string
+          format: date
+          example: "2024-04-30"
+
+  responses:
+    400BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CommonErrorObject"
+
+    404NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CommonErrorObject"
+
+    500InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CommonErrorObject"

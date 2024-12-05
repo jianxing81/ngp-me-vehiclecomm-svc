@@ -1,0 +1,127 @@
+version: 0.2
+
+######################################
+# DEV TEAM CAN MODIFY ENV BLOCK
+# For App specific variable, Dev team can CRUD themself in this file env block.
+# For more detail you can look into this guide: https://blog.shikisoft.com/define-environment-vars-aws-codebuild-buildspec/
+######################################
+env:
+  # Plain text variable configuration (Dev team can modify this)
+  variables:
+    # This is the default value for ECS CPU and Memory configuration, Dev can modify this
+    CPU: 1024
+    SIDECAR_CPU: 256
+    APP_CPU: 512
+    SIDECAR_MEMORY: 512
+    MEMORY: 2048
+    APP_MEMORY: 1024
+    CONTAINER_PORT: 8080
+
+  # If you want to add variable from parameter store, do as follow:
+  # parameter-store:
+  #   S3_BUCKET: "my_s3_bucket"
+  #   ORG_BUCKET: "/my_org/s3_bucket"
+  #   DB_USERNAME: "db_username"
+
+  # If you want to add app specific secret environment, do as follow:
+  # secrets-manager:
+  #   ParameterName: "<secret-name>:<secret-key>"
+
+
+phases:
+  ######################################
+  # DEV CAN MODIFY INSTALL PHASE
+  #
+  # This phase is to select your runtime version
+  ######################################
+
+  # You can select your build environment like below:
+  #
+  # install:
+  #   on-failure: ABORT
+  #   runtime-versions:
+  #     java: corretto17
+
+  ######################################
+  # DO NOT MODIFY PRE_BUILD PHASE
+  ######################################
+  # pre_build:
+  #   on-failure: ABORT
+  #   commands:
+  # Logging into ECR
+  # - echo ________ Connecting to Amazon ECR ________
+  # - aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $ECR_URI
+
+  # Calculate ECR Tag based on date
+  # - REPOSITORY_URI=$ECR_URI/$ECR_IMAGE_NAME
+  # - IMAGE_TAG=$(echo build_$(echo `date -d '+7 hours' +%F`)_$(echo `date -d '+7 hours' +%T`) | awk ' { gsub (":", ".")} 1 ')
+
+  # Get the sidecar taskdef template from s3 bucket
+  # - echo ________ Downloading template taskdef.json ________
+  # - aws s3 sync $TEMPLATE_S3 ./codebuild/
+
+
+  ######################################
+  # DEV TEAM CAN MODIFY THIS BUILD PHASE ACCORDING TO THEIR APP REQUIREMENT
+  ######################################
+  build:
+    on-failure: ABORT
+    commands:
+      ##############
+      # MODIFY YOUR DOCKER BUILD CODE HERE:
+      - ./gradlew :techframework:update -Purl=$JDBC_CONNECTION -Pusername=$DB_USERNAME -Ppassword=$DB_PASSWORD
+
+      ######################################
+      # DO NOT MODIFY POST_BUILD PHASE
+      ######################################
+      # post_build:
+      #   commands:
+      # Generate taskdef.json file
+      # - echo ________ Writing taskdef.json file ________
+      # - export CONTAINERDEF=$(cat ./codebuild/containerdef.json)
+      # - echo $(jq ".containerDefinitions += [$CONTAINERDEF]" ./codebuild/taskdef.json) > ./codebuild/taskdef.json
+
+      # - sed -i.bak -e 's/'"{NAMESPACE}"'/'$NAMESPACE'/g'                ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"{ENV}"'/'$ENV'/g'                            ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"{APPNAME}"'/'$APPNAME'/g'                    ./codebuild/taskdef.json
+      # - sed -i.bak -e "s/\"{CONTAINER_PORT}\"/$CONTAINER_PORT/g"        ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"{CPU}"'/'$CPU'/g'                            ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"{MEMORY}"'/'$MEMORY'/g'                      ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"\"{SIDECAR_CPU}\""'/'$SIDECAR_CPU'/g'        ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"\"{SIDECAR_MEMORY}\""'/'$SIDECAR_MEMORY'/g'  ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"\"{APP_CPU}\""'/'$APP_CPU'/g'                ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"\"{APP_MEMORY}\""'/'$APP_MEMORY'/g'          ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"{AWS_ACCOUNT_ID}"'/'$AWS_ACCOUNT_ID'/g'      ./codebuild/taskdef.json
+      # - sed -i.bak -e 's/'"{AWS_REGION}"'/'$AWS_REGION'/g'              ./codebuild/taskdef.json
+
+      # Generate imageDetail.json file
+      # - echo ________ Writing imageDetail.json file ________
+      # - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG  > imageDetail.json
+
+      # Generate appspec.yaml file
+      # - echo ________ Writing appspec.yaml file ________
+      # - sed -i.bak -e 's/'"{NAMESPACE}"'/'$NAMESPACE'/g'                ./codebuild/appspec.yaml
+      # - sed -i.bak -e 's/'"{ENV}"'/'$ENV'/g'                            ./codebuild/appspec.yaml
+      # - sed -i.bak -e 's/'"{APPNAME}"'/'$APPNAME'/g'                    ./codebuild/appspec.yaml
+      # - sed -i.bak -e 's/'"{CONTAINER_PORT}"'/'$CONTAINER_PORT'/g'      ./codebuild/appspec.yaml
+
+
+######################################
+# DEV TEAM CAN MODIFY CACHE BLOCK
+# Modify the path to the location you want to cache
+# This default value is for caching maven library
+######################################
+# cache:
+#   paths:
+#     - '/root/.gradle/caches/**/*'
+
+
+######################################
+# DO NOT MODIFY ARTIFACTS
+######################################
+# artifacts:
+#   files:
+#     - imageDetail.json
+#     - ./codebuild/appspec.yaml
+#     - ./codebuild/taskdef.json
+#   discard-paths: yes

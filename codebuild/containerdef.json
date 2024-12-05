@@ -1,0 +1,54 @@
+{
+  "essential": true,
+  "image": "<IMAGE1_NAME>",
+  "logConfiguration": {
+    "logDriver": "awsfirelens",
+    "options": {}
+  },
+  "name": "{NAMESPACE}-{APPNAME}-{ENV}",
+  "portMappings": [
+    {
+      "containerPort": "{CONTAINER_PORT}",
+      "hostPort": "{CONTAINER_PORT}",
+      "protocol": "tcp"
+    }
+  ],
+  "environment": [
+    {
+      "name": "DD_ENV",
+      "value": "{ENV}"
+    },
+    {
+      "name": "DD_SERVICE",
+      "value": "{NAMESPACE}-{APPNAME}"
+    },
+    {
+      "name": "DD_VERSION",
+      "value": "0.1"
+    },
+    {
+      "name": "DD_RUNTIME_METRICS_ENABLED",
+      "value": "true"
+    },
+    {
+      "name": "DD_AGENT_HOST",
+      "value": "localhost"
+    },
+    {
+      "name": "DD_TRACE_AGENT_PORT",
+      "value": "9529"
+    }
+  ],
+  "healthCheck": {
+    "command": [
+      "CMD-SHELL",
+      "curl -f http://localhost:{CONTAINER_PORT}/actuator/health || exit 1"
+    ],
+    "interval": 30,
+    "timeout": 5,
+    "retries": 3,
+    "startPeriod": 120
+  },
+  "cpu": "{APP_CPU}",
+  "memory": "{APP_MEMORY}"
+}

@@ -1,0 +1,172 @@
+version: 0.2
+
+######################################
+# DEV TEAM CAN MODIFY ENV BLOCK
+# For App specific variable, Dev team can CRUD themself in this file env block.
+# For more detail you can look into this guide: https://blog.shikisoft.com/define-environment-vars-aws-codebuild-buildspec/
+######################################
+env:
+  # Plain text variable configuration (Dev team can modify this)
+  variables:
+    CPU: 2048
+    APP_CPU: 1536
+    # Note that 2 sidecars are injected -> log-router and datakit-agent
+    SIDECAR_CPU: 256
+    MEMORY: 8192
+    APP_MEMORY: 6144
+    # Note that 2 sidecars are injected -> log-router and datakit-agent
+    SIDECAR_MEMORY: 1024
+    CONTAINER_PORT: 8080
+
+  # If you want to add variable from parameter store, do as follow:
+  # parameter-store:
+  #   S3_BUCKET: "my_s3_bucket"
+  #   ORG_BUCKET: "/my_org/s3_bucket"
+  #   DB_USERNAME: "db_username"
+
+  # If you want to add app specific secret environment, do as follow:
+  # secrets-manager:
+  #   ParameterName: "<secret-name>:<secret-key>"
+  
+
+phases:
+  ######################################
+  # DEV CAN MODIFY INSTALL PHASE
+  #
+  # This phase is to select your runtime version
+  ###################################### 
+
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      java: corretto17
+    commands:
+      - echo ________ Installing sonarqube ________
+      - mkdir -p /tmp/sonarqube
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip -O /tmp/sonarqube/sonarqube.zip
+      - unzip /tmp/sonarqube/sonarqube.zip -d /tmp/sonarqube
+      - export PATH=$PATH:/tmp/sonarqube/sonar-scanner-4.8.0.2856-linux/bin/
+  ######################################
+  # DO NOT MODIFY PRE_BUILD PHASE
+  ######################################
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - echo ________ Logging into Dockerhub ________
+      - >
+        DOCKER_CREDENTIALS=$(aws secretsmanager get-secret-value --secret-id ngp/dockerhub --region ap-southeast-1 | 
+        jq -r '.SecretString | fromjson')
+      - export DOCKER_USERNAME=$(echo $DOCKER_CREDENTIALS | jq -r .username)
+      - export DOCKER_PASSWORD=$(echo $DOCKER_CREDENTIALS | jq -r .password)
+      - if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_PASSWORD" ]; then echo "Docker credentials not found."; exit 1; fi
+      - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+      # Logging into ECR
+      - echo ________ Connecting to Amazon ECR ________
+      - aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $ECR_URI
+
+      # Calculate ECR Tag based on date
+      - REPOSITORY_URI=$ECR_URI/$ECR_IMAGE_NAME
+      - IMAGE_TAG=$(echo build_$(echo `date -d '+8 hours' +%F`)_$(echo `date -d '+8 hours' +%T`) | awk ' { gsub (":", ".")} 1 ')
+
+      # Get the sidecar taskdef template from s3 bucket
+      - echo ________ Downloading template taskdef.json ________
+      - aws s3 sync $TEMPLATE_S3 ./codebuild/
+
+      - echo ________ Downloading redis certificate________
+      - aws s3api get-object --bucket rediscloud-ca-cert --key redis_ca.pem redis_ca.pem
+      - # Inject environmental configuration into application-${ENV}.properties
+      - echo ________ Injecting environmental configuration __ENV__${ENV} ________
+      - >
+        mkdir -p ./techframework/src/main/resources &&
+        echo "spring.config.import[0]=optional:aws-parameterstore:/config/ngp-me-vehiclecomm-svc_${ENV}/\n
+        spring.config.import[1]=optional:aws-secretsmanager:/secrets/ngp/${ENV};/secrets/ngp/${ENV}/ngp-me-vehiclecomm-svc\n
+        spring.config.import[2]=optional:configserver:https://mob-common-cms-app.apps.sg.${ENV}.zig.systems/v1.0/config-server\n" > ./techframework/src/main/resources/application-${ENV}.properties
+
+
+  ######################################
+  # DEV TEAM CAN MODIFY THIS BUILD PHASE ACCORDING TO THEIR APP REQUIREMENT 
+  ######################################
+  build:
+    on-failure: ABORT
+    commands:
+      - echo ________ Installing dependencies ________
+      - chmod +x ./gradlew
+      - ./gradlew clean build -x test -x integrationTest
+      ##############
+      # MODIFY YOUR DOCKER BUILD CODE HERE:
+      ##############
+      - echo __________Start Building___________
+      - >-
+        docker build --platform linux/amd64 
+        --build-arg SONAR_TOKEN=$SONAR_TOKEN 
+        --build-arg SONAR_HOST=$SONAR_HOST 
+        --build-arg SONAR_PROJECT=$SONAR_PROJECT 
+        --build-arg SONAR_ORGANIZATION=$SONAR_ORGANIZATION 
+        --build-arg SONAR_BRANCH=$SONAR_BRANCH 
+        --build-arg ECR_URI=$ECR_URI 
+        --build-arg profile=$profile 
+        -t $REPOSITORY_URI:latest .
+
+      # DOCKER TAG
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
+      # PUSHING DOCKER IMAGE TO ECR
+      - echo ________ Pushing the Docker images ________
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+  ######################################
+  # DO NOT MODIFY POST_BUILD PHASE
+  ######################################
+  post_build:
+    commands:
+      # Generate taskdef.json file
+      - echo ________ Writing taskdef.json file ________
+      - export CONTAINERDEF=$(cat ./codebuild/containerdef.json)
+      - printf '%s' "$(jq ".containerDefinitions += [$CONTAINERDEF]" ./codebuild/taskdef.json)" > ./codebuild/taskdef.json
+
+      - sed -i.bak -e 's/'"{NAMESPACE}"'/'$NAMESPACE'/g'                ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{ENV}"'/'$ENV'/g'                            ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{APPNAME}"'/'$APPNAME'/g'                    ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{SOURCE}"'/'$SOURCE'/g'                      ./codebuild/taskdef.json
+      - sed -i.bak -e "s/\"{CONTAINER_PORT}\"/$CONTAINER_PORT/g" -e "s/{CONTAINER_PORT}/$CONTAINER_PORT/g" ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{CPU}"'/'$CPU'/g'                            ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{MEMORY}"'/'$MEMORY'/g'                      ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"\"{SIDECAR_CPU}\""'/'$SIDECAR_CPU'/g'        ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"\"{SIDECAR_MEMORY}\""'/'$SIDECAR_MEMORY'/g'  ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"\"{APP_CPU}\""'/'$APP_CPU'/g'                ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"\"{APP_MEMORY}\""'/'$APP_MEMORY'/g'          ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{AWS_ACCOUNT_ID}"'/'$AWS_ACCOUNT_ID'/g'      ./codebuild/taskdef.json
+      - sed -i.bak -e 's/'"{AWS_REGION}"'/'$AWS_REGION'/g'              ./codebuild/taskdef.json
+
+      # Generate imageDetail.json file
+      - echo ________ Writing imageDetail.json file ________
+      - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG  > imageDetail.json
+
+      # Generate appspec.yaml file
+      - echo ________ Writing appspec.yaml file ________
+      - sed -i.bak -e 's/'"{NAMESPACE}"'/'$NAMESPACE'/g'                ./codebuild/appspec.yaml
+      - sed -i.bak -e 's/'"{ENV}"'/'$ENV'/g'                            ./codebuild/appspec.yaml
+      - sed -i.bak -e 's/'"{APPNAME}"'/'$APPNAME'/g'                    ./codebuild/appspec.yaml
+      - sed -i.bak -e 's/'"{CONTAINER_PORT}"'/'$CONTAINER_PORT'/g'      ./codebuild/appspec.yaml
+
+
+######################################
+# DEV TEAM CAN MODIFY CACHE BLOCK
+# Modify the path to the location you want to cache
+# This default value is for caching maven library
+######################################
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
+
+
+######################################
+# DO NOT MODIFY ARTIFACTS
+######################################
+artifacts:
+  files:
+    - imageDetail.json
+    - ./codebuild/appspec.yaml
+    - ./codebuild/taskdef.json
+  discard-paths: yes

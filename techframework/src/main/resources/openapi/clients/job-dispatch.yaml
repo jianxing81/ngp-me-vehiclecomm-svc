@@ -1,0 +1,2273 @@
+---
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  "/":
+    get:
+      tags:
+        - home-controller
+      summary: Home API
+      operationId: getResponse
+      responses:
+        '200':
+          description: Application is running!
+  "/v1.0/job-events/{jobNo}":
+    get:
+      summary: "Query job event by job no"
+      description: "Query job event by job no"
+      tags:
+        - Job-event-log-controller
+      operationId: queryJobEventByJobNo
+      parameters:
+        - name: jobNo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/JobEventResponse"
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "error": {
+                      "message": "JobNo is required",
+                      "code": "60000"
+                    },
+                    "path": "/v1.0/job-events/{jobNo}",
+                    "timestamp": "2023-08-29T09:12:33.001Z"
+                  }
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+        '404':
+          description: Resource Not Found
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Job does not found
+                  value: {
+                    "timestamp": "2024-01-10T13:09:54+07:00",
+                    "traceId": "00000000000000000000000000000000",
+                    "error": {
+                      "message": "Job does not exist",
+                      "code": 60002
+                    }
+                  }
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: Interal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  "/v1.0/job-events" :
+    post:
+      tags:
+        - Job-event-log-controller
+      operationId: insertJobEventLog
+      description: Insert job event log via API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobEventLogRequest"
+      responses:
+        '204':
+          description: Successful No Content
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "error": {
+                      "message": "Invalid event type",
+                      "code": "60009",
+                      "data": {
+                        "fields": [
+                          {
+                            "name": "event",
+                            "messages": [
+                              "Invalid event type"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "timestamp": "2023-08-29T09:12:33.001Z"
+                  }
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+        '404':
+          description: Not Found
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Not Found
+                  value: {
+                    "error": {
+                      "message": "Job detail was not found for jobNo: 5000465308",
+                      "code": "60009",
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                  }
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+              example:
+                {
+                  "error": {
+                    "message": "Could not open JPA EntityManager for transaction",
+                    "code": "60000"
+                  },
+                  "timestamp": "2023-12-25T08:38:00.268989702Z"
+                }
+  "/v1.0/jobs/job-no-block-request":
+    post:
+      summary: "Get jobNo block by vehicleId"
+      description: "Get jobNo block by vehicleId"
+      tags:
+        - Job-no-block-controller
+      operationId: getJobNoBlockByVehicleId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/JobNoBlockRequest"
+      responses:
+        '200':
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobNoBlockResponse"
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+              example: {
+                "error": {
+                  "message": "Field vehicleId cannot be null",
+                  "code": "60000",
+                },
+                "timestamp": "2000-08-29T09:12:33.001",
+              }
+        '404':
+          $ref: "#/components/responses/404NotFound"
+        '500':
+          "$ref": "#/components/responses/500InternalServerError"
+  "/v1.0/jobs/search":
+    post:
+      tags:
+        - Job-controller
+      operationId: searchJobs
+      description: Search jobs with multiple filter params (AND condition)
+      responses:
+        "200":
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchJobsResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchJobsRequest"
+  "/v1.0/jobs/{jobNo}":
+    get:
+      summary: "Get job by job no"
+      description: "Get job by job no"
+      tags:
+        - Job-controller
+      operationId: getJobByJobNo
+      parameters:
+        - name: jobNo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/JobDetail"
+        '404':
+          description: Resource Not Found
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Job does not found
+                  value: {
+                    "timestamp": "2024-01-10T13:09:54+07:00",
+                    "traceId": "00000000000000000000000000000000",
+                    "error": {
+                      "message": "Job does not exist",
+                      "code": 60002
+                    }
+                  }
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/InternalServerErrorResponse"
+  "/v1.0/jobs/{jobNo}/events":
+    put:
+      tags:
+        - Job-controller
+      summary: Driver update the job event
+      description: When the driver update the job event flow
+      operationId: updateJobEventFlow
+      parameters:
+        - name: jobNo
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "50000465977"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateJobEventFlowRequest"
+      responses:
+        '204':
+          description: Successful No Content
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "error": {
+                      "message": "Invalid request content",
+                      "code": "60009",
+                      "data": {
+                        "fields": [
+                          {
+                            "name": "vehicleId",
+                            "messages": [
+                              "must not be null"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "timestamp": "2023-08-29T09:12:33.001Z"
+                  }
+                example2:
+                  summary: Meter Cycling invalid
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Meter Cycling invalid",
+                      "code": "BID_UNSUCCESSFULLY",
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                  }
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+        '404':
+          description: Not Found
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Not Found
+                  value: {
+                    "error": {
+                      "message": "Job detail was not found for jobNo: 5000465308",
+                      "code": "60009",
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                  }
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+              example:
+                {
+                  "error": {
+                    "message": "Could not open JPA EntityManager for transaction",
+                    "code": "60000"
+                  },
+                  "timestamp": "2023-12-25T08:38:00.268989702Z"
+                }
+  "/v1.0/jobs/{jobNo}/driver-response":
+    post:
+      tags:
+        - Job-controller
+      summary: Handle driver response
+      description: Handle driver response
+      operationId: handleDriverResponse
+      parameters:
+        - name: jobNo
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "50000465977"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/HandleDriverRequest"
+      responses:
+        '204':
+          description: Successful No Content
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "error": {
+                      "message": "Job is required",
+                      "code": "60000"
+                    },
+                    "path": "/v1.0/jobs/{jobNo}/driver-response",
+                    "timestamp": "2023-08-29T09:12:33.001Z"
+                  }
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+        '404':
+          description: Not Found
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Not Found
+                  value: {
+                    "error": {
+                      "message": "Job detail was not found for jobNo: 5000465308",
+                      "code": "60009",
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                  }
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+              example:
+                {
+                  "error": {
+                    "message": "Could not open JPA EntityManager for transaction",
+                    "code": "60000"
+                  },
+                  "timestamp": "2023-12-25T08:38:00.268989702Z"
+                }
+  "/v1.0/jobs/{jobNo}/latest-job":
+    get:
+      summary: "Get latest job by job no"
+      description: "Get latest job by job no"
+      tags:
+        - Job-controller
+      operationId: getLatestJobByJobNo
+      parameters:
+        - in: header
+          name: X-Correlation-ID
+          schema:
+            type: string
+          required: true
+        - name: jobNo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/LatestJobResponse"
+        '404':
+          description: Resource Not Found
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Job does not found
+                  value: {
+                    "timestamp": "2024-01-10T13:09:54+07:00",
+                    "traceId": "00000000000000000000000000000000",
+                    "error": {
+                      "message": "Job does not exist",
+                      "code": 60002
+                    }
+                  }
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/InternalServerErrorResponse"
+  "/v1.0/jobs/cancel":
+    post:
+      tags:
+        - Job-controller
+      summary: Cancel Job
+      description: Cancel Job based on coming request
+      operationId: cancelJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CancelJobRequest"
+      responses:
+        '200':
+          description: Cancel job returns an HTTP status code 200
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CancelJobResponse"
+              examples:
+                success:
+                  summary: Cancel job successfully
+                  value:
+                    bookingReference: "9123456705082018201019"
+                    jobNo: "5000465308"
+                    jobStatus: "PENDING"
+                    status: "SUCCESS"
+                    message: "null"
+                failed:
+                  summary: Cancel job failed because of invalid status
+                  value:
+                    bookingReference: "9123456705082018201019"
+                    jobNo: "5000465308"
+                    jobStatus: "COMPLETED"
+                    status: "FAILED"
+                    message: "Cannot Cancel the Job with Status COMPLETED"
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              schema:
+                example: {
+                  "error": {
+                    "message": "Field cancelReasonCode cannot be null",
+                    "code": "BAD_REQUEST",
+                  },
+                  "timestamp": "2000-08-29T09:12:33.001",
+                }
+        '404':
+          $ref: "#/components/responses/404NotFound"
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+  "/v1.0/jobs/driver-cancel":
+    post:
+      tags:
+        - Job-controller
+      summary: Cancel job from driver dcp
+      description: Cancel job from driver dcp
+      operationId: cancelJobByDriver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/DriverCancelRequest"
+      responses:
+        '200':
+          description: Cancel successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CancelResponse"
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+              example: {
+                "error": {
+                  "message": "Field cancelReasonCode cannot be null",
+                  "code": "60000",
+                },
+                "timestamp": "2000-08-29T09:12:33.001",
+              }
+        '404':
+          $ref: "#/components/responses/404NotFound"
+        '500':
+          "$ref": "#/components/responses/500InternalServerError"
+  "/v1.0/jobs/throttle-flag":
+    get:
+      tags:
+        - Job-controller
+      summary: Get Jobs throttleFlag value
+      description: Get Jobs throttleFlag value
+      operationId: getThrottleFlag
+      responses:
+        '200':
+          description: Reload throttleFlag successfully
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ThrottleFlag"
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/InternalServerErrorResponse"
+  "/v1.0/jobs/vehicles/{vehicleId}/job-offers":
+    get:
+      tags:
+        - Job-controller
+      summary: Get job offer by vehicle id
+      description: Get job offer by vehicle id
+      operationId: getJobOfferByVehicleId
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "vehicleId1"
+        - name: driverId
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "driverId"
+      responses:
+        '200':
+          description: Response successfully
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/JobOffersResponse'
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+              example: {
+                "error": {
+                  "message": "Field vehicleId cannot be null",
+                  "code": "60000",
+                },
+                "timestamp": "2000-08-29T09:12:33.001",
+              }
+        '404':
+          "$ref": "#/components/responses/404NotFound"
+        '500':
+          "$ref": "#/components/responses/500InternalServerError"
+  "/v1.0/jobs/sync-master-attributes":
+    post:
+      tags:
+        - Job-controller
+      summary: Sync Up Driver Vehicle Master Attributes
+      description: Sync up driver and vehicle master attributes triggered from AWS EventBridge
+      operationId: syncMasterAttributes
+      responses:
+        '204':
+          description: Trigger successfully
+        '500':
+          "$ref": "#/components/responses/500InternalServerError"
+
+
+  "/v1.0/jobs/bid-aj":
+    post:
+      tags:
+        - Job-controller
+      summary: Handle bid AJ from list
+      description: Handle bid AJ from list
+      operationId: handleBidAJ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BidAJRequest"
+      responses:
+        "204":
+          description: Response Success
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+              example: {
+                "error": {
+                  "message": "Field vehicleId cannot be null",
+                  "code": "60000",
+                },
+                "timestamp": "2000-08-29T09:12:33.001",
+              }
+        '404':
+          $ref: "#/components/responses/404NotFound"
+        '500':
+          "$ref": "#/components/responses/500InternalServerError"
+
+  "/v1.0/jobs/drivers/{driverId}/cache/suspends":
+    post:
+      summary: "Create the driver suspend"
+      description: "Create the driver suspend"
+      tags:
+        - Driver Suspend Service
+      operationId: createDriverSuspend
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: string
+          required: true
+          description: driver id
+          example: 123
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateOrUpdateDriverSuspend"
+      responses:
+        "204":
+          description: Create or update driver suspend response successfully (No content).
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Suspend type is not supported",
+                      "code": 400,
+                      "data": {
+
+                      }
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                    "path": "/v1.0/jobs/drivers/{driverId}/cache/suspends"
+                  }
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+              examples:
+                example1:
+                  summary: Internal Server Error
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Internal Server Error",
+                      "code": 500
+
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                    "path": "/v1.0/jobs/drivers/{driverId}/cache/suspends"
+                  }
+    put:
+      summary: "Update the driver suspend"
+      description: "Update the driver suspend"
+      tags:
+        - Driver Suspend Service
+      operationId: updateDriverSuspend
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: string
+          required: true
+          description: driver id
+          example: 123
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateOrUpdateDriverSuspend"
+      responses:
+        "204":
+          description: Create or update driver suspend response successfully (No content).
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Suspend type is not supported",
+                      "code": 400,
+                      "data": {
+
+                      }
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                    "path": "/v1.0/jobs/drivers/{driverId}/cache/suspends"
+                  }
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+              examples:
+                example1:
+                  summary: Internal Server Error
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Internal Server Error",
+                      "code": 500
+
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                    "path": "/v1.0/jobs/drivers/{driverId}/cache/suspends"
+                  }
+    delete:
+      summary: "Delete the driver suspend"
+      description: "Delete the driver suspend"
+      tags:
+        - Driver Suspend Service
+      operationId: deleteDriverSuspend
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: string
+          required: true
+          description: driver id
+          example: 123
+        - in: query
+          name: suspendType
+          schema:
+            $ref: '#/components/schemas/SuspendType'
+      responses:
+        "204":
+          description: Delete driver suspend response successfully (No content).
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              examples:
+                example1:
+                  summary: Bad Request
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Suspend type is not supported",
+                      "code": 400,
+                      "data": {
+
+                      }
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                    "path": "/v1.0/jobs/drivers/{driverId}/cache/suspends"
+                  }
+        '500':
+          description: Internal Server Error
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+              examples:
+                example1:
+                  summary: Internal Server Error
+                  value: {
+                    "traceId": "6433c664f53c933e668c442ddd11ad2e",
+                    "error": {
+                      "message": "Internal Server Error",
+                      "code": 500
+
+                    },
+                    "timestamp": "2000-08-29T09:12:33.001Z",
+                    "path": "/v1.0/jobs/drivers/{driverId}/cache/suspends"
+                  }
+
+  "/v1.0/jobs/autobid-suspension/{driverId}":
+    get:
+      tags:
+        - Job-controller
+      summary: Get Current Autobid/Autoaccept Suspension Status of Driver
+      description: Get Current Autobid/Autoaccept Suspension Status of Driver
+      operationId: getAutoBidSuspension
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAutoBidSuspensionResponse"
+        '400':
+          description: Bad Request
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/BadRequestError"
+              example: {
+                "error": {
+                  "message": "The driverId cannot be null",
+                  "code": "60000",
+                },
+                "timestamp": "2000-08-29T09:12:33.001",
+              }
+        '500':
+          $ref: "#/components/responses/500InternalServerError"
+
+components:
+  schemas:
+    ErrorObject:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "sample error message"
+        code:
+          type: integer
+          example: "sample error code"
+    TimedOutResponse:
+      type: object
+      required:
+        - data
+        - timestamp
+      properties:
+        data:
+          type: object
+          properties:
+            isTimeout:
+              type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        traceId:
+          type: string
+    LatestJobResponse:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          example: "5000438022"
+        status:
+          $ref: "#/components/schemas/JobStatus"
+        bookingDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        pickupDate :
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        cancelDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        cancelReason:
+          type: string
+          example: "This is a reason"
+    ErrorResponse:
+      type: object
+      properties:
+        traceId:
+          type: string
+        path:
+          type: string
+        error:
+          $ref: '#/components/schemas/SimpleError'
+        timestamp:
+          type: string
+          format: date-time
+    SimpleError:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Paging:
+      type: object
+      properties:
+        limit:
+          type: integer
+        skip:
+          type: integer
+    Sorting:
+      type: object
+      properties:
+        sortBy:
+          type: string
+        orderBy:
+          type: string
+    SearchDateTime:
+      type: object
+      properties:
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+    PickupTimeRange:
+      type: object
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+    JobStatus:
+      type: string
+      enum: [ NEW, ARRIVAL, PENDING, CONFIRMED, CONFIRMING, ONBOARD, NO_SHOW, NO_SHOW_UR, COMPLETED, FAILED, NTA, CANCELLED, CANCELLED_UR]
+      example: "(NEW | ARRIVAL | PENDING | CONFIRMED | CONFIRMING | ONBOARD | NO_SHOW | NO_SHOW_UR | COMPLETED | FAILED | NTA | CANCELLED | CANCELLED_UR)"
+    JobType:
+      type: string
+      enum: [ADVANCE, IMMEDIATE, STREET]
+    SearchJobsRequest:
+      type: object
+      properties:
+        odrdTripIds:
+          type: array
+          items:
+            type: string
+          example: [ "ODRD11", "ODRD22" ]
+        driverId:
+          type: string
+          example: "dri111"
+        vehicleId:
+          type: string
+          example: "veh111"
+        customerId:
+          type: string
+          example: "customer111"
+        phoneNumber:
+          type: string
+          example: "65xxxxxxxxx"
+        countryCode:
+          type: string
+          example: "65"
+        bookingChannels:
+          type: array
+          items:
+            type: string
+          example: [ "IPHONE", "H5", "OPENAPI" ]
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobStatus"
+        jobTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobType"
+        bookingReferences:
+          type: array
+          items:
+            type: string
+          example: [ "DCPBOK11111", "DCPBOK22222", "DCPBOK33333" ]
+        bookingDate:
+          $ref: "#/components/schemas/SearchDateTime"
+        pickupDate:
+          $ref: "#/components/schemas/SearchDateTime"
+        completedDate:
+          $ref: "#/components/schemas/SearchDateTime"
+        pickupTimeRange:
+          $ref: "#/components/schemas/PickupTimeRange"
+        pickupZoneIds:
+          type: array
+          items:
+            type: string
+        cancelDate:
+          $ref: "#/components/schemas/SearchDateTime"
+        noShowDate:
+          $ref: "#/components/schemas/SearchDateTime"
+        failDate:
+          $ref: "#/components/schemas/SearchDateTime"
+        replacedJobNo:
+          type: string
+        productIds:
+          type: array
+          items:
+            type: string
+          example: [ "string", "string" ]
+        bookingIds:
+          type: array
+          items:
+            type: string
+          example: [ "string", "string" ]
+        paging:
+          $ref: "#/components/schemas/Paging"
+        orderBy:
+          type: string
+          example: "completedDate asc,pickupDate desc"
+    SearchJobsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        skip:
+          type: integer
+        limit:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobDetail"
+    JobDetail:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          format: int32
+          example: "5000438022"
+        customerId:
+          type: string
+          example: "string"
+        bookingPhoneNumber:
+          type: string
+          example: "81115215"
+        bookingId:
+          type: string
+          example: "string"
+        odrdTripId:
+          type: string
+          example: "string"
+        vehicleId:
+          type: string
+          example: "string"
+        driverId:
+          type: string
+          example: "string"
+        fareId:
+          type: string
+          example: "string"
+        productId:
+          type: string
+          example: "string"
+        status:
+          $ref: "#/components/schemas/JobStatus"
+        jobType:
+          $ref: "#/components/schemas/JobType"
+        isPaxVip:
+          type: boolean
+          example: false
+        isBlacklist:
+          type: boolean
+          example: false
+        dispatchMethod:
+          type: string
+          example: "string"
+        bookingChannel:
+          type: string
+          example: "string"
+        offerCycle:
+          type: number
+          example: 4
+        driverNote:
+          type: string
+          example: "string"
+        acceptedDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        arrivalDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        onboardDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        noShowDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        noShowUrDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        completedDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        cancelDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        cancelUrDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        cancelBy:
+          type: string
+          example: "string"
+        cancelReason:
+          type: string
+          example: "string"
+        redispatchReasonCode:
+          type: string
+          example: "string"
+        redispatchBy:
+          type: string
+          example: "string"
+        replacedJobNo:
+          type: string
+          example: "string"
+        isAutoRedispatch:
+          type: boolean
+          example: false
+        redispatchDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        pickupDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        eta:
+          type: string
+          example: "0"
+        estimatedFare:
+          type: number
+          example: 5.5
+        hasChildOnboard:
+          type: boolean
+          example: false
+        bookingReference:
+          type: string
+          example: "DCPBOK11111"
+        bookingDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        failDate:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        promoCode:
+          type: string
+          example: "20071203"
+        promoCodeAmount:
+          type: number
+          example: 200
+        paymentMethod:
+          type: string
+          example: "CASH"
+        pickupZoneId:
+          type: string
+          example: "1"
+        linkJobNo:
+          type: string
+          example: "50000000"
+        destinationZoneId:
+          type: string
+          example: "1"
+        vehicleTypeId:
+          type: integer
+          example: 1
+        pickupPoint:
+          $ref: "#/components/schemas/AddressPoint"
+        dropoffPoint:
+          $ref: "#/components/schemas/AddressPoint"
+        intermediateDropOffPoint:
+          $ref: "#/components/schemas/AddressPoint"
+        platformFeeBreakdown:
+          $ref: "#/components/schemas/PlatformFeeBreakdown"
+    BookingPayment:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          format: int32
+          example: "2640"
+        paymentDepositStatus:
+          type: number
+          example: 0
+        paymentStatus:
+          type: string
+          example: "string"
+        totalAmountDue:
+          type: number
+          example: 3.8
+        paymentType:
+          type: string
+          example: "NEW"
+        chequeVochNumber:
+          type: string
+          example: "string"
+        bankBranch:
+          type: string
+          example: "string"
+        jobQuantity:
+          type: number
+          example: 1
+        currencyCode:
+          type: string
+          example: "SGD"
+        levyAmount:
+          type: number
+          example: 0.3
+        paymentRemarks:
+          type: string
+          example: "string"
+        gst:
+          type: string
+          example: "string"
+        gstInclusive:
+          type: string
+          example: "string"
+        fareAdjustedType:
+          type: string
+          example: "string"
+        fareAdjustedAmount:
+          type: number
+          example: 1.5
+        bookingPaymentTariff:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingPaymentTariff"
+    PlatformFeeBreakdown:
+      type: object
+      properties:
+        platformFeeConfigId:
+          type: integer
+          example: 1
+    BookingPaymentTariff:
+      type: object
+      properties:
+        bookingPaymentTariffId:
+          type: string
+          example: "1536749"
+        tariffCode:
+          type: string
+          example: "PDTPTDESTPT"
+        tariffValue:
+          type: number
+          example: 24.9
+        discountId:
+          type: string
+          example: "string"
+        discountValue:
+          type: number
+          example: 0
+        units:
+          type: number
+          example: 1
+        tariffCalculatedValue:
+          type: number
+          example: 24.9
+        levy:
+          type: number
+          example: 0
+    JobEvent:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        eventCode:
+          type: string
+          example: "308"
+        eventMessage:
+          type: string
+          example: "Job Created"
+        vehicleId:
+          type: string
+          example: "VEH111"
+        driverId:
+          type: string
+          example: "dri111"
+        jobStatus:
+          type: string
+          example: "ONBOARD"
+        jobState:
+          type: string
+          example: "ONBOARD"
+        driverIsAutoBid:
+          type: boolean
+          example: false
+        driverIsAutoAccept:
+          type: boolean
+          example: false
+        dispatchCycle:
+          type: number
+          example: 1
+        createdDate:
+          type: string
+          example: "2007-12-03T10:15:30+01"
+        createdBy:
+          type: string
+          example: "string"
+        updatedDate:
+          type: string
+          example: "2007-12-03T10:15:30+01"
+        updatedBy:
+          type: string
+          example: "string"
+    AddressPoint:
+      type: object
+      properties:
+        addressLat:
+          type: number
+          example: 100
+        addressLng:
+          type: number
+          example: 308
+        addressRef:
+          type: string
+          example: "Address ref"
+        address:
+          type: string
+          example: "80 singapore"
+    JobEventResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobEventByJobNo"
+    JobEventByJobNo:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        eventCode:
+          type: string
+          example: "308"
+        eventMessage:
+          type: string
+          example: "Job Created"
+        vehicleId:
+          type: string
+          example: "VEH111"
+        driverId:
+          type: string
+          example: "dri111"
+        dispatchCycle:
+          type: number
+          example: 1
+        vehicleLat:
+          type: number
+          format: double
+          example: 123.22113
+        vehicleLng:
+          type: number
+          format: double
+          example: 145.14884
+        deviceType:
+          type: string
+          example: "MDT"
+        updatedDate:
+          format: date-time
+          type: string
+          example: "2024-03-06T10:15:30.000Z"
+        updatedBy:
+          type: string
+          example: "string"
+    InternalServerErrorResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        timestamp:
+          type: integer
+          format: int64
+          example: 1681116843
+        traceId:
+          type: string
+          example: "6433c664f53c933e668c442ddd11ad2e"
+        error:
+          type: string
+          example: "Internal server error."
+        code:
+          type: integer
+          format: int64
+          example: 500
+      description: ''
+    MaximumPageSizeValidationErrorResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        timestamp:
+          type: integer
+          format: int64
+          example: 1681116843
+        traceId:
+          type: string
+          example: "6433c664f53c933e668c442ddd11ad2e"
+        error:
+          type: string
+          example: "Maximum page size is 50."
+        code:
+          type: integer
+          format: int64
+          example: 100
+      description: ''
+    BadRequestError:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: BadRequest
+        message:
+          type: string
+          example: Invalid request content
+        data:
+          $ref: '#/components/schemas/ErrorData'
+    ErrorData:
+      required:
+        - fields
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+    Field:
+      type: object
+      properties:
+        name:
+          type: string
+          example: error field name
+        messages:
+          type: array
+          items:
+            type: string
+            example: error message
+    HandleDriverRequest:
+      type: object
+      properties:
+        driverId:
+          type: string
+          example: "5008023"
+          description: ID of driver
+        vehicleId:
+          type: string
+          example: "SHA7494L"
+          description: ID of vehicle
+        latitude:
+          type: number
+          format: double
+          example: 1.3595183412
+          default: null
+          description: Latitude of current vehicle position.
+        longitude:
+          type: number
+          format: double
+          example: 103.8363419902
+          default: null
+          description: Longitude of current vehicle position.
+        eta:
+          type: number
+          format: double
+          example: 10
+          default: null
+          description: The estimate time arrive
+        driverAction:
+          $ref: "#/components/schemas/DriverActionEnum"
+        eventTime:
+          type: string
+          format: date-time
+        deviceType:
+          $ref: "#/components/schemas/DeviceType"
+      required:
+        - driverId
+        - vehicleId
+        - driverAction
+        - eventTime
+        - deviceType
+    DriverCancelRequest:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          description: Unique id of job
+          example: "50000465977"
+        driverId:
+          type: string
+          description: Driver Id
+          example: "5008023"
+        vehicleId:
+          type: string
+          description: Vehicle Id
+          example: "SHA7494L"
+        cancelNotes:
+          type: string
+          description: Note
+          example: "Cannot Reach In Time"
+        cancelReasonCode:
+          type: string
+          description: "PHC Cancel Reason Code"
+          example: "170"
+      required:
+        - jobNo
+        - driverId
+        - vehicleId
+        - cancelReasonCode
+    ThrottleFlag:
+      type: object
+      properties:
+        throttleFlag:
+          type: boolean
+    CancelJobRequest:
+      type: object
+      properties:
+        bookingReference:
+          type: string
+          example: "9123456705082018201019"
+        jobNo:
+          type: string
+          example: "jobNo"
+        cancelBy:
+          type: string
+        customerId:
+          type: string
+          example: "2209757"
+        phoneNo:
+          type: string
+          example: "0123456789"
+        countryCode:
+          type: string
+          example: "65"
+        cancelReasonCode:
+          type: string
+          description: "Cancel Reason Code"
+          example: "170"
+        cancelChannel:
+          $ref: "#/components/schemas/ChannelEnum"
+        cancelNotes:
+          type: string
+          example: "Cancel Job"
+        cancelChargeFlag:
+          type: boolean
+          example: false
+      required:
+        - cancelChannel
+        - cancelReasonCode
+    CancelResponse:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          description: Unique id of job
+          example: "50000465977"
+        status:
+          type: string
+          description: Status of job
+          example: "CANCELLED_UR"
+    UpdateJobEventFlowRequest:
+      type: object
+      properties:
+        driverId:
+          type: string
+          example: "5008023"
+          description: ID of driver
+        vehicleId:
+          type: string
+          example: "SHA7494L"
+          description: ID of vehicle
+        lat:
+          type: number
+          format: double
+          example: 1.3595183412
+          default: null
+          description: Latitude of current vehicle position.
+        lng:
+          type: number
+          format: double
+          example: 103.8363419902
+          default: null
+          description: Longitude of current vehicle position.
+        deviceType:
+          $ref: "#/components/schemas/DeviceType"
+        gpsQuality:
+          type: number
+          format: double
+          example: 15.357999801635741
+          default: null
+          description: measure between the displayed position and the actual position.
+        speed:
+          type: number
+          format: double
+          example: 0.062170278280973434
+          default: null
+          description: Speed of Vehicle
+        event:
+          $ref: "#/components/schemas/JobEventTypeEnum"
+        occurredAt:
+          type: string
+          format: date-time
+        noshowEventType:
+          $ref: "#/components/schemas/NoshowEventTypeEnum"
+      required:
+        - driverId
+        - vehicleId
+        - event
+        - lat
+        - lng
+        - deviceType
+    CancelJobResponse:
+      type: object
+      properties:
+        bookingReference:
+          type: string
+        jobNo:
+          type: string
+        jobStatus:
+          type: string
+          description: The job status before cancellation
+        status:
+          type: string
+          description: The value is 'SUCCESS' when the job status is PENDING or CONFIRMED, otherwise 'FAILED'
+        message:
+          type: string
+    JobEventLogRequest:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          example: "5008023"
+          description: Unique id of job
+        eventMessage:
+          type: string
+          example: "Call out response"
+          description: Event message
+        event:
+          $ref: "#/components/schemas/JobEventLogEnum"
+        eventTime:
+          type: string
+          format: date-time
+        vehicleId:
+          type: string
+          example: "SH1234"
+          description: Vehicle ID
+        driverId:
+          type: string
+          example: "drv1234"
+          description: Driver ID
+        originator:
+          $ref: "#/components/schemas/OriginatorEnum"
+      required:
+        - jobNo
+        - eventMessage
+        - event
+        - eventTime
+        - vehicleId
+        - driverId
+        - originator
+    JobEventTypeEnum:
+      type: string
+      enum: [ ARRIVE, NO_SHOW, START_TRIP, END_TRIP, INTERMEDIATE_STOP ]
+      example: "START_TRIP"
+
+    NoshowEventTypeEnum:
+      type: integer
+      enum: [0, 1, 2, 3, 4, 99]
+      description: "[NOSHOW_EVENT_TYPE_FOR_VIP_WAITING_APPROVAL_INVALID_LOC, NOSHOW_EVENT_TYPE_FOR_VIP_AUTO_APPROVAL, NOSHOW_EVENT_TYPE_FOR_NON_VIP_APPROVED_INVALID_LOC, NOSHOW_EVENT_TYPE_NON_VIP_WAITING_FOR_APPROVAL, NOSHOW_EVENT_TYPE_FOR_VIP_WAITING_APPROVAL_VALID_LOC]"
+      example: "0"
+
+    DriverActionEnum:
+      type: string
+      enum: [ACCEPT, REJECT, SYSTEM_REJECT, TIME_OUT, CONFIRM_ACK, CONFIRM_AUTOACCEPT_ACK, CANCEL_ACK, MODIFY_ACK, MODIFY_REJECT, STREET_CONVERT_ACK,CALL_OUT,JOB_SYNC_ACK ]
+      example: "CANCEL_ACK"
+
+    JobEventLogEnum:
+      type: string
+      enum: [ NOTIFICATION_EVENT_CODE_CSA_ANNOUNCEMENT, NOTIFICATION_EVENT_CODE_RESPONSE_FAILED, TO_IVD_CALL_OUT_RESPONSE, EVT_AJ_REMINDER_NOT_ACK, EVT_AJ_REMINDER_ACK]
+      example: "TO_IVD_CALL_OUT_RESPONSE"
+
+    OriginatorEnum:
+      type: string
+      enum: [IVR, MDT]
+      description: "To indicate which channel created this event log"
+      example: "IVR"
+
+    DeviceType:
+      type: string
+      enum: [ Android, Iphone, MDT ]
+      example: "Android"
+    ChannelEnum:
+      type: string
+      enum: [ IPHONE, ANDROID, CSA, SMS, IVR, IRD, IRD_POSTAL, OPENAPI, MWF, H5ALIPAY, H5, H5DBSPAYLAH, H5LAZADA, H5KRISPLUS, DRIVERAPP ]
+      example: "IPHONE"
+
+    JobOffersResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobOfferResponse"
+
+    JobOfferResponse:
+      type: object
+      properties:
+        eventName:
+          type: string
+          example: "JOB_OFFER"
+        eventDate:
+          type: string
+          format: date-time
+          example: "2024-03-11T06:41:59.574Z"
+        messageId:
+          type: string
+          example: "6dd1009d-5e5f-4f11-a9b0-ecfaeee531f3"
+        jobNo:
+          type: string
+          example: 5000123456
+        jobStatus:
+          type: string
+          example: "CONFIRMED"
+        ivdNo:
+          type: string
+          example: 12345
+        ipAddress:
+          type: string
+          example: 127.0.0.1
+        driverId:
+          type: string
+          example: 5008020
+        vehicleId:
+          type: string
+          example: "TST8020A"
+        messageSource:
+          type: string
+          example: "string"
+        jobType:
+          type: string
+          example: "IMMEDIATE"
+        paymentMethod:
+          type: string
+          example: CREDIT_CARD
+        dispatchMethod:
+          type: integer
+          example: 0
+        priorityCustomer:
+          type: boolean
+          example: true
+        autoAcceptSuspend:
+          type: boolean
+          example: true
+        bookingDt:
+          format: date-time
+          type: string
+          example: "2024-02-28T10:00:00.000Z"
+        pickupTime:
+          type: string
+          format: date-time
+          example: 2024-03-11T06:41:59.574Z
+        pickupLat:
+          type: number
+          format: double
+          example: 1.234
+        pickupLng:
+          type: number
+          format: double
+          example: 103.123
+        pickupAddr:
+          type: string
+          example: 21 Bulim Drive
+        pickupPt:
+          type: string
+        bookingChannel:
+          type: string
+          example: "Android"
+        bookingFee:
+          type: number
+          format: double
+          example: 12.56
+        fareType:
+          type: integer
+          example: 0
+        levy:
+          type: number
+          format: double
+          example: 2.67
+        jobMeritPoint:
+          type: integer
+          example: 0
+        deposit:
+          type: number
+          format: double
+          example: 1.34
+        noShowTiming:
+          type: integer
+          example: 0
+        accountId:
+          type: string
+          example: "string"
+        companyName:
+          type: string
+          example: "CCPL"
+        passengerName:
+          type: string
+          example: "Norman Scully"
+        passengerContactNumber:
+          type: string
+          example: 83347302
+        destLat:
+          type: number
+          format: double
+          example: 1.236
+        destLng:
+          type: number
+          format: double
+          example: 103.128
+        destAddr:
+          type: string
+          example: "West Coast Park"
+        destPt:
+          type: string
+        notes:
+          type: string
+          example: "Don't be late"
+        waitingPoint:
+          type: string
+          example: "Near Bus Stop"
+        remark:
+          type: string
+          example: "string"
+        productId:
+          type: string
+          example: "STD001"
+        productType:
+          type: string
+          example: "product type"
+        productDesc:
+          type: string
+        newGst:
+          type: integer
+          format: int64
+          example: 8
+        newGstIncl:
+          type: integer
+          format: int32
+          example: 8
+        newGstEffectiveDate:
+          type: string
+          format: date-time
+          example: "2024-03-11T06:41:59.574Z"
+        newAdminValue:
+          type: integer
+          format: int64
+          example: 2
+        newAdminDiscountVal:
+          type: integer
+          format: int64
+          example: 2
+        newAdminType:
+          type: integer
+          format: int32
+          example: 2
+        newAdminGstMsg:
+          type: integer
+          format: int32
+          example: 2
+        newAdminEffectiveDate:
+          type: string
+          format: date-time
+          example: "2024-03-11T06:41:59.574Z"
+        currentGst:
+          type: integer
+          format: int64
+          example: 7
+        currentGstIncl:
+          type: integer
+          format: int32
+          example: 0
+        currentAdminVal:
+          type: integer
+          format: int64
+          example: 7
+        currentAdminDiscountVal:
+          type: integer
+          format: int64
+          example: 2
+        currentAdminType:
+          type: integer
+          format: int32
+          example: 2
+        currentAdminGstMsg:
+          type: integer
+          format: int32
+          example: 2
+        sosFlag:
+          type: boolean
+        ccNumber:
+          type: string
+          example: "string"
+        ccExpiry:
+          type: string
+          example: "string"
+        promoCode:
+          type: string
+          example: "string"
+        promoAmount:
+          type: number
+          format: double
+          example: 0.0
+        promoWaiveBookingFee:
+          type: string
+          example: "Y"
+        loyaltyEnable:
+          type: boolean
+          example: true
+        loyaltyAmount:
+          type: number
+          format: double
+          example: 0.0
+        eta:
+          type: string
+          example: "string"
+        collectFare:
+          type: boolean
+          example: true
+        autoAcceptFlag:
+          type: integer
+          format: int32
+          example: 0
+        paymentPlus:
+          type: string
+          example: "string"
+        enableCalloutButton:
+          type: boolean
+          example: true
+        cbdFlag:
+          type: boolean
+        cbdSurchargeAmount:
+          type: number
+          format: double
+          example: 0.0
+        dynamicPriceIndicator:
+          type: string
+          example: string
+        privateField:
+          type: string
+          example: "string"
+        comfortProtectPremium:
+          type: number
+          format: double
+        cpFreeInsurance:
+          type: string
+        platformFeeItem:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformFeeItem"
+        tariffInfo:
+          type: array
+          items:
+            $ref: "#/components/schemas/TariffInfo"
+        extraStopsInfo:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExtraStopsInfo"
+        cabchargePolicy:
+          $ref: "#/components/schemas/CabchargePolicy"
+        multiStop:
+          $ref: "#/components/schemas/MultiStop"
+        offerTimeout:
+          type: integer
+          format: int64
+          example: 2
+        offerableDevice:
+          type: string
+        arrivalRequired:
+          type: integer
+          format: int32
+          example: 1
+        alert:
+          type: string
+
+    TariffInfo:
+      type: object
+      properties:
+        tariffTypeCode:
+          type: string
+          example: string
+        tariffUnit:
+          type: integer
+          example: 0
+        discountedTotal:
+          $ref: "#/components/schemas/DiscountedTotal"
+    PlatformFeeItem:
+      type: object
+      properties:
+        platformFeeApplicability:
+          type: string
+          example: Y
+        thresholdLimit:
+          type: number
+          format: double
+          example: 0.0
+        feeBelowThresholdLimit:
+          type: number
+          format: double
+          example: 0.0
+        feeAboveThresholdLimit:
+          type: number
+          format: double
+          example: 0.0
+    DiscountedTotal:
+      type: object
+      properties:
+        fare:
+          type: integer
+          example: 12.45
+        currency:
+          type: string
+          example: "SGD"
+    ExtraStopsInfo:
+      type: object
+      properties:
+        extraStopName:
+          type: string
+          example: string
+        extraStopQty:
+          type: integer
+          example: 0
+        extraStopDetail:
+          type: string
+          example: "string"
+    MultiStop:
+      type: object
+      properties:
+        intermediateAddr:
+          type: string
+          example: string
+        intermediateLat:
+          type: number
+          format: double
+          example: 1.456
+        intermediateLng:
+          type: number
+          format: double
+          example: 103.456
+        intermediatePt:
+          type: string
+        intermediateZoneId:
+          type: string
+    CabchargePolicy:
+      type: object
+      properties:
+        amountCap:
+          type: number
+          format: double
+          example: 0.0
+        policyDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyDetails"
+
+    PolicyDetails:
+      type: object
+      properties:
+        policyPickupLat:
+          type: number
+          format: double
+          example: 1.67
+        policyPickupLng:
+          type: number
+          format: double
+          example: 103.44
+        policyDestLat:
+          type: number
+          format: double
+          example: 1.45
+        policyDestLng:
+          type: number
+          format: double
+          example: 103.12
+        policyRadius:
+          type: number
+          format: double
+          example: 0.0
+    BidAJRequest:
+      type: object
+      required:
+        - deviceType
+        - jobNo
+        - vehicleId
+        - driverId
+        - bidTime
+      properties:
+        deviceType:
+          $ref: "#/components/schemas/DeviceType"
+        jobNo:
+          type: string
+          example: 123
+        vehicleId:
+          type: string
+          example: SH123456
+        driverId:
+          type: string
+          example: 0225952
+        bidTime:
+          type: string
+          format: date-time
+
+
+    SuspendType:
+      type: string
+      enum:
+        - PREMIER_ADVANCE
+        - PREMIER_IMMEDIATE
+        - CCC_ADVANCE
+        - CCC_IMMEDIATE
+        - PREMIER_ADVANCE_PUBLIC
+        - PREMIER_ADVANCE_CORPORATE
+      example: PREMIER_IMMEDIATE
+    CreateOrUpdateDriverSuspend:
+      type: object
+      properties:
+        suspendType:
+          $ref: '#/components/schemas/SuspendType'
+        startTime:
+          type: string
+          format: date-time
+          example: "2000-08-29T09:12:33.001Z"
+        endTime:
+          type: string
+          format: date-time
+          example: "2000-08-29T09:12:33.001Z"
+    JobNoBlockRequest:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+          description: Unique id of vehicle
+          example: "SHA7494L"
+        jobNoBlockStart:
+          type: string
+          description: Unique jobNo block start
+          example: "770000520"
+        jobNoBlockEnd:
+          type: string
+          description: Unique jobNo block end
+          example: "770000539"
+      required:
+        - vehicleId
+    JobNoBlockResponse:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+          description: Unique id of vehicle
+          example: "50000465977"
+        jobNoBlockStart:
+          type: string
+          description: Unique jobNo block start
+          example: "770000520"
+        jobNoBlockEnd:
+          type: string
+          description: Unique jobNo block end
+          example: "770000539"
+        isNew:
+          type: boolean
+          description: true means the block of jobNo has been generated. False means using the old value from database
+          example: true
+    GetAutoBidSuspensionResponse:
+      type: object
+      properties:
+        autoBidSuspended:
+          type: boolean
+          example: true
+        autoAcceptSuspended:
+          type: boolean
+          example: true
+
+  responses:
+    404NotFound:
+      description: Not Found
+      content:
+        application/json:
+          example: {
+            "error": {
+              "message": "Job detail was not found for jobNo: 5000465308",
+              "code": "60009",
+            },
+            "timestamp": "2000-08-29T09:12:33.001Z",
+          }
+          schema:
+            $ref: "#/components/schemas/ErrorObject"
+
+    500InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          example: {
+            "error": {
+              "message": "Could not open JPA EntityManager for transaction",
+              "code": "60000"
+            },
+            "timestamp": "2023-12-25T08:38:00.268989702Z"
+          }
+          schema:
+            $ref: "#/components/schemas/ErrorObject"

@@ -1,0 +1,275 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/UploadTripEvent.schema.json",
+  "title": "UploadTripEvent",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.tripupload.UploadTripEvent",
+  "description": "Upload Trip Event",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "UploadTripEvent"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "jobNo": {
+      "type": "string"
+    },
+    "tripId": {
+      "type": "string"
+    },
+    "distance": {
+      "type": "number"
+    },
+    "totalDistance": {
+      "type": "string"
+    },
+    "driverId": {
+      "type": "string"
+    },
+    "vehicleId": {
+      "type": "string"
+    },
+    "tripType": {
+      "type": "string",
+      "enum": [
+        "IMMEDIATE",
+        "ADVANCE",
+        "STREET"
+      ]
+    },
+    "gst": {
+      "type": "number"
+    },
+    "gstInclusive": {
+      "type": "boolean"
+    },
+    "rewardsValue": {
+      "type": "number"
+    },
+    "meterFare": {
+      "type": "number"
+    },
+    "creditAdmin": {
+      "type": "number"
+    },
+    "paymentMethod": {
+      "type": "string"
+    },
+    "isLoyaltyMember": {
+      "type": "boolean"
+    },
+    "balanceDue": {
+      "type": "number"
+    },
+    "voucherPaymentAmt": {
+      "type": "number"
+    },
+    "erp": {
+      "type": "number"
+    },
+    "amountPaid": {
+      "type": "number"
+    },
+    "levy": {
+      "type": "number"
+    },
+    "promoCode": {
+      "type": "string"
+    },
+    "promoAmt": {
+      "type": "number"
+    },
+    "entryMode": {
+      "type": "string"
+    },
+    "extraStop": {
+      "type": "integer"
+    },
+    "extraStopAmt": {
+      "type": "number"
+    },
+    "extraDist": {
+      "type": "number"
+    },
+    "extraDistAmt": {
+      "type": "number"
+    },
+    "totalFare": {
+      "type": "number"
+    },
+    "productId": {
+      "type": "string"
+    },
+    "fixedPrice": {
+      "type": "number"
+    },
+    "adminDiscount": {
+      "type": "number"
+    },
+    "discount": {
+      "type": "number"
+    },
+    "comfortProtectPremium": {
+      "type": "number"
+    },
+    "platformFee": {
+      "type": "number"
+    },
+    "platformFeeApplicability": {
+      "type": "string"
+    },
+    "peakPeriod": {
+      "type": "number"
+    },
+    "cbd": {
+      "type": "number"
+    },
+    "airport": {
+      "type": "number"
+    },
+    "location": {
+      "type": "number"
+    },
+    "dslc": {
+      "type": "number"
+    },
+    "dropOffLocationSurcharge": {
+      "type": "number"
+    },
+    "privateBooking": {
+      "type": "number"
+    },
+    "publicHoliday": {
+      "type": "number"
+    },
+    "lateNight10": {
+      "type": "number"
+    },
+    "lateNight20": {
+      "type": "number"
+    },
+    "lateNight35": {
+      "type": "number"
+    },
+    "lateNight50": {
+      "type": "number"
+    },
+    "preHoliday": {
+      "type": "number"
+    },
+    "comfortdelgroContactlessCarddata": {
+      "type": "string"
+    },
+    "comfortdelgroTripInfo": {
+      "type": "string"
+    },
+    "pickupLat": {
+      "type": "number"
+    },
+    "pickupLng": {
+      "type": "number"
+    },
+    "tripStartDt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tripEndDt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dropoffLat": {
+      "type": "number"
+    },
+    "dropoffLng": {
+      "type": "number"
+    },
+    "intermediateLat": {
+      "type": "number"
+    },
+    "intermediateLng": {
+      "type": "number"
+    },
+    "cpFreeInsurance": {
+      "type": "boolean"
+    },
+    "txnType": {
+      "type": "string"
+    },
+    "ccNumber": {
+      "type": "string"
+    },
+    "messageDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updateType": {
+      "type": "string"
+    },
+    "privateField": {
+      "type": "string"
+    },
+    "partnerDiscountType": {
+      "type": "string"
+    },
+    "partnerDiscountValue": {
+      "type": "number"
+    },
+    "partnerOrderId": {
+      "type": "string"
+    },
+    "partnerDiscountAmt": {
+      "type": "number"
+    },
+    "meterEdit": {
+      "type": "boolean"
+    },
+    "ivdNo": {
+      "type": "string"
+    },
+    "ipAddress": {
+      "type": "string"
+    },
+    "speed": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "additionalCharges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "chargeId": {
+            "type": "number"
+          },
+          "chargeType": {
+            "type": "string"
+          },
+          "chargeAmt": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "maximumSpeed": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "driverId",
+    "vehicleId",
+    "jobNo"
+  ]
+}

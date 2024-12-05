@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/VehicleEvent.schema.json",
+  "title": "VehicleEvent",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.vehicleevent.VehicleEvent",
+  "description": "Vehicle  Event",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "VehicleEvent"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ivdNo": {
+      "type": "integer"
+    },
+    "driverId": {
+      "type": "string"
+    },
+    "vehicleId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "deviceType": {
+      "type": "string",
+      "enum": ["ANDROID", "IPHONE","MDT"]
+    },
+    "event": {
+      "type": "string",
+      "enum": ["DISABLE_AUTO_BID", "ENABLE_AUTO_BID","ENABLE_AUTO_ACCEPT","APP_STATUS_SYNC"]
+    }
+  },
+  "required": [
+    "event",
+    "deviceType"
+  ]
+}

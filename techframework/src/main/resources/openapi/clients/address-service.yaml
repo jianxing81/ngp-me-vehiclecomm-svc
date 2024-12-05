@@ -1,0 +1,388 @@
+---
+openapi: 3.0.1
+info:
+  title: ME - ADDRESS
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+    description: Localhost
+paths:
+  "/v1.0/address/location":
+    get:
+      tags:
+        - Address Service
+      summary: Search address by Location
+      description: Search address by Location
+      operationId: searchAddressLocation
+      parameters:
+        - in: query
+          name: lat
+          description: Lat
+          schema:
+            type: number
+            format: double
+            example: 1.3358621
+          required: true
+        - in: query
+          name: lng
+          description: Lng
+          schema:
+            type: number
+            format: double
+            example: 103.8966983
+          required: true
+        - in: query
+          name: size
+          description: page size, default is 10
+          schema:
+            type: number
+            example: 10
+            default: 10
+          required: false
+        - in: query
+          name: distanceKm
+          description: Search radius based on lat and lng in km, default is 0.3
+          schema:
+            type: number
+            format: double
+            example: 0.3
+            default: 0.3
+          required: false
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddressLocationResponse"
+        '400':
+          description: Invalid access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidAccessTokenResponse"
+        "401":
+          description: Expired access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpiredAccessTokenResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+components:
+  schemas:
+    AddressLocationResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddressSearchResponseData"
+    AddressSearchResponseData:
+      type: object
+      properties:
+        addressRef:
+          type: string
+          example: "576100"
+        parentAddressRef:
+          type: string
+          example: "179801"
+        zoneId:
+          type: string
+          example: "26"
+        postCode:
+          type: string
+          example: "179100"
+        building:
+          type: string
+          example: "150 North Bridge Rd"
+        remark:
+          type: string
+        cbdFlag:
+          type: string
+          example: "Y or N"
+        road:
+          type: string
+          example: "150 North Bridge Rd, Singapore"
+        block:
+          type: string
+          example: "A"
+        tradeName:
+          type: string
+          example: "Cha-cha Thai Cuisine"
+        buildingType:
+          type: integer
+          format: int64
+          example: 1
+        lat:
+          type: number
+          format: double
+          example: 1.2919328
+        lng:
+          type: number
+          format: double
+          example: 103.8533091
+        bookFreq:
+          type: integer
+          format: int64
+          example: 1
+        geoDistance:
+          type: number
+          format: double
+          example: 0.35
+        restrictedAreas:
+          type: array
+          items:
+            $ref: "#/components/schemas/RestrictedAreaResponse"
+        pickupPoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/PickupPointResponseData"
+        addressCodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddressCodeResponseData"
+        noshowTiming:
+          type: integer
+          format: int32
+          example: 1
+    RestrictedAreaResponse:
+      type: object
+      properties:
+        restrictedId:
+          type: integer
+          example: "1"
+        name:
+          type: string
+          example: "Toa Payoh East Pickup Restricted Area"
+        type:
+          $ref: "#/components/schemas/RestrictionTypeEnum"
+        restrictionBy:
+          $ref: "#/components/schemas/RestrictionRecordTypeEnum"
+        vehicleType:
+          type: integer
+          example: 1
+        vehicleTypeString:
+          $ref: "#/components/schemas/RestrictionVehicleTypeEnum"
+        startDate:
+          type: string
+          format: date
+          example: "2024-11-01"
+        startTime:
+          type: string
+          format: time
+          example: "12:00"
+        endDate:
+          type: string
+          format: date
+          example: "2023-11-01"
+        endTime:
+          type: string
+          format: time
+          example: "19:00"
+        zone:
+          type: string
+          example: "37"
+        addressRef:
+          type: string
+          example: "170714"
+        boundary:
+          $ref: "#/components/schemas/BoundaryModel"
+        addressCoords:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddressModel"
+        remarks:
+          type: string
+          example: "this is remarks"
+        severity:
+          type: integer
+          example: 1
+        severityString:
+          type: string
+          example: "Booking Not Allowed"
+        createdDate:
+          type: string
+          example: "2023-05-17T06:47:53.094554Z"
+        createdBy:
+          type: string
+          example: "James"
+        updatedDate:
+          type: string
+          example: "2023-05-17T06:47:53.094554Z"
+        updatedBy:
+          type: string
+          example: "James"
+
+    PickupPointResponseData:
+      type: object
+      properties:
+        addressRef:
+          type: string
+        block:
+          type: string
+        bookFreq:
+          type: number
+          format: double
+          example: 0.39
+        building:
+          type: string
+        buildingType:
+          type: number
+        lat:
+          type: string
+        lng:
+          type: string
+        parentAddressRef:
+          type: string
+        pickupPt:
+          type: string
+        remark:
+          type: string
+        tradeNames:
+          type: array
+          items:
+            type: string
+        zoneInfoId:
+          type: string
+
+    AddressCodeResponseData:
+      type: object
+      properties:
+        addressCode:
+          type: string
+        addressRef:
+          type: string
+        addressName:
+          type: string
+
+    RestrictionTypeEnum:
+      type: string
+      enum: [ Pick, Dest, Both ]
+      example: "(Pick | Dest | Both)"
+
+    RestrictionRecordTypeEnum:
+      type: string
+      enum: [ Zone, Address, Boundary ]
+      example: "(Zone | Address | Boundary)"
+
+    RestrictionVehicleTypeEnum:
+      type: string
+      enum: [ PHC, TAXI, BOTH ]
+      example: "(PHC | TAXI | BOTH)"
+
+    BoundaryModel:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "Polygon"
+
+        coordinates:
+          type: array
+          items:
+            $ref: "#/components/schemas/CoordinateModel"
+          example: [
+            {
+              lat: 1.297967,
+              lng: 103.814217
+            },
+            {
+              lat: 1.312691,
+              lng: 103.867705
+            },
+            {
+              lat: 1.280917,
+              lng: 103.870289
+            },
+            {
+              lat: 1.267484,
+              lng: 103.842124
+            }
+          ]
+    AddressModel:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        block:
+          type: string
+          example: "55"
+        road:
+          type: string
+          example: "EDGEDALE PLAINS"
+        postCode:
+          type: string
+    CoordinateModel:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          example: 1.297967
+        lng:
+          type: number
+          format: double
+          example: 103.814217
+    InvalidAccessTokenResponse:
+      properties:
+        timestamp:
+          type: string
+          example: 1684294089
+        traceId:
+          type: string
+          example: 0de46b6fcbc8da83
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Invalid access token
+            code:
+              type: number
+              format: double
+              example: 2
+    ExpiredAccessTokenResponse:
+      properties:
+        timestamp:
+          type: string
+          example: 1684294089
+        traceId:
+          type: string
+          example: 0de46b6fcbc8da83
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Expired access token
+            code:
+              type: number
+              format: double
+              example: 3
+    InternalErrorResponse:
+      properties:
+        timestamp:
+          type: string
+          example: 1684294089
+        traceId:
+          type: string
+          example: 0de46b6fcbc8da83
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Internal server error
+            code:
+              type: number
+              format: double
+              example: 1

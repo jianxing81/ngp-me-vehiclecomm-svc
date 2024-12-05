@@ -1,0 +1,1856 @@
+---
+openapi: 3.0.0
+info:
+  title: MDT Service
+  description: Mdt Service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://me.zig.live
+    description: SwaggerHub API Auto Mocking
+paths:
+  /v1.0/mdt/log-off:
+    post:
+      tags:
+        - MDT Controller
+      summary: Mdt log off.
+      description: Mdt log off.
+      operationId: mdtLogoff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdtLogOffRequest'
+      responses:
+        '200':
+          description: Mdt Log off success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdtLogOffResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/power-up:
+    post:
+      tags:
+        - MDT Controller
+      summary: Mdt Power up
+      description: Mdt Power up
+      operationId: mdtPowerUp
+      requestBody:
+        description: JSON object of a powerup request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdtPowerUpRequest'
+      responses:
+        '200':
+          description: Success response of MDT power up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdtPowerUpResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/vehicle/{ivdNo}:
+    get:
+      tags:
+        - MDT Controller
+      summary: Vehicle by IVD No.
+      description: Get Vehicle by IVD No.
+      operationId: getVehicleByIVDNo
+      parameters:
+        - in: path
+          name: ivdNo
+          required: true
+          schema:
+            type: integer
+          description: Ivd Unique Identifier
+      responses:
+        '200':
+          description: Get Vehicle by IVD No.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleByIvdResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/verify-otp:
+    post:
+      tags:
+        - MDT Controller
+      summary: Mdt Verify Otp.
+      description: Mdt Verify Otp.
+      operationId: mdtVerifyOtp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpForgotPasswordRequest'
+      responses:
+        '200':
+          description: Mdt Verify Otp success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyOtpForgotPasswordResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/ivd-device-config/{ivdNo}:
+    post:
+      tags:
+        - MDT Controller
+      summary: MDT IVD Config.
+      description: MDT IVD Config.
+      operationId: mdtIvdDeviceConfig
+      parameters:
+        - in: path
+          name: ivdNo
+          required: true
+          schema:
+            type: integer
+          description: Ivd Unique Identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IVDConfigRequest"
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IVDConfigResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/forgot-password:
+    patch:
+      tags:
+        - MDT Controller
+      summary: Mdt Forgot Password.
+      description: Mdt Forgot Password.
+      operationId: mdtForgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdtForgotPasswordRequest'
+      responses:
+        '200':
+          description: Mdt Verify Otp success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdtForgotPasswordResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  /v1.0/mdt/change-pin:
+    patch:
+      tags:
+        - MDT Controller
+      summary: Change Pin in MDT
+      description: Change Pin in MDT.
+      operationId: mdtChangePin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdtChangePinRequest'
+      responses:
+        '200':
+          description: Mdt Change Pin Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdtChangePinResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/ivd-ping:
+    patch:
+      tags:
+        - MDT Controller
+      summary: IVD Ping Response
+      description: IVD Ping Response API.
+      operationId: mdtIvdPingUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IvdPingUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IVDPingResponse"
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  /v1.0/mdt/ivd/{imsi}:
+    get:
+      tags:
+        - MDT Controller
+      summary: Internal get IVD Details.
+      description: Internal get IVD Details based on IMSI No.
+      operationId: getIvdDetailsByImsi
+      parameters:
+        - in: path
+          name: imsi
+          schema:
+            type: string
+          required: true
+          description: IMSI
+          example: 578326104816765
+      responses:
+        '200':
+          description: Retrieved IVD Details Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MDTGetIvdResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    put:
+      tags:
+        - MDT Controller
+      summary: MDT Update Ivd Details.
+      description: MDT Update Ivd Details.
+      operationId: updateIvdDetailsByImsi
+      parameters:
+        - in: path
+          name: imsi
+          schema:
+            type: string
+          required: true
+          description: IMSI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MDTIvdUpdateDetails"
+        required: true
+      responses:
+        '204':
+          description: Updated IVD Details Successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    post:
+      tags:
+        - MDT Controller
+      summary: Internal Create Ivd Details.
+      description: Internal Create Ivd Details.
+      operationId: createIvdDetails
+      parameters:
+        - in: path
+          name: imsi
+          required: true
+          schema:
+            type: string
+          description: IMSI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MDTIvdCreateDetails"
+        required: true
+      responses:
+        '204':
+          description: Successful No Content
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    delete:
+      tags:
+        - MDT Controller
+      summary: Internal Delete Ivd Details.
+      description: Internal Delete Ivd Details.
+      operationId: deleteIvdDetails
+      parameters:
+        - in: path
+          name: imsi
+          required: true
+          schema:
+            type: string
+          description: IMSI
+      responses:
+        '204':
+          description: Successful No Content
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/log-on:
+    post:
+      tags:
+        - MDT Controller
+      summary: MDT log on.
+      description: MDT log on.
+      operationId: mdtLogOn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MDTLogOnRequest"
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MDTLogOnResponse"
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/zone-ivd/{zoneIvdNo}:
+    get:
+      tags:
+        - MDT Controller
+      summary: Internal get IvdZoneInfo Details.
+      description: Internal get IvdZoneInfo Details based on ZoneIvdNo.
+      operationId: getIvdZoneInfoDetailsByZoneIvdNo
+      parameters:
+        - in: path
+          name: zoneIvdNo
+          schema:
+            type: integer
+          required: true
+          description: zoneIvdNo
+          example: 44
+      responses:
+        '200':
+          description: Retrieved ZoneIVDInfo Details Successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IvdZoneInfoResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/mdt/job-no-block-request:
+    post:
+      tags:
+        - MDT Controller
+      summary: Get jobNo block by vehicleId
+      description: Get jobNo block by vehicleId
+      operationId: jobNoBlockRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobNumberBlockRequest'
+        required: true
+      responses:
+        '200':
+          description: Job number block response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobNumberBlockResponse'
+        '400':
+          description: BadRequest / Request Body cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+components:
+  schemas:
+    IvdZoneInfoResponse:
+      required:
+        - zoneId
+        - zoneIvdDesc
+        - roofTopIndex
+      type: object
+      properties:
+        zoneId:
+          type: string
+          example: "44"
+        zoneIvdDesc:
+          type: string
+          example: "ADMIRALTY WEST"
+        roofTopIndex:
+          type: integer
+          example: 999
+    MDTIvdUpdateDetails:
+      type: object
+      properties:
+        scIn:
+          type: string
+        ipAddress:
+          type: string
+        firmwareVer:
+          type: string
+        fareVer:
+          type: string
+        softwareCode:
+          type: string
+        expWayVer:
+          type: string
+        zoneVer:
+          type: string
+        rankVer:
+          type: string
+        locationVer:
+          type: string
+        paraVer:
+          type: string
+        msgVer:
+          type: string
+        companyId:
+          type: integer
+        ota0Ver:
+          type: string
+        autoExecVer:
+          type: string
+        roadPilotVer:
+          type: string
+        zoneDllVer:
+          type: string
+        meterDllVer:
+          type: string
+        comDllVer:
+          type: string
+        waveOnV2MasterListVer:
+          type: string
+        pinPadParaVer:
+          type: string
+        addressVer:
+          type: string
+        productVer:
+          type: string
+        tariffCodesVer:
+          type: string
+        roofDesVer:
+          type: string
+        ipPortVer:
+          type: string
+        ivdConfigVer:
+          type: string
+        storedMsgCfgVer:
+          type: string
+        gprsProvider:
+          type: string
+        meterVer:
+          type: string
+        meterChkSum:
+          type: string
+        pinPadSwVer:
+          type: string
+        loggerVer:
+          type: string
+        phoneNo:
+          type: string
+        genParaVerified:
+          type: string
+        geoRoadPilotVer:
+          type: string
+        geoRoadPilotDataVer:
+          type: string
+        customShellTestLnk:
+          type: string
+        sapphireStartExe:
+          type: string
+        loaderIni:
+          type: string
+        ceteonStartExe:
+          type: string
+        ceteon738Reg:
+          type: string
+        ceteon728Reg:
+          type: string
+        pinPadDllDll:
+          type: string
+        gpsDllDll:
+          type: string
+        verControlExe:
+          type: string
+        f1MeterMajorVer:
+          type: string
+        f1MeterMinorVer:
+          type: string
+        pinPadSerialNo:
+          type: string
+        ezLinkSamSerialNo:
+          type: string
+        parameterVersion:
+          type: string
+        binTableVersion:
+          type: string
+        masterAppVersion:
+          type: string
+        creditAppVersion:
+          type: string
+        netsAppVersion:
+          type: string
+        ePinsAppVersion:
+          type: string
+        ezLinkAppVersion:
+          type: string
+        huModelNumber:
+          type: string
+        huSerialNumber:
+          type: string
+        huFirmwareVersion:
+          type: string
+        puModelNumber:
+          type: string
+        puSerialNumber:
+          type: string
+        puFirmwareVersion:
+          type: string
+        fullBlackListCan:
+          type: string
+        fullBlackListRange:
+          type: string
+        smallBlackListCan:
+          type: string
+        smallBlackListRange:
+          type: string
+        videoEnabled:
+          type: boolean
+        loyaltyAppVersion:
+          type: string
+        dashAppVersion:
+          type: string
+        tlvFlag:
+          type: boolean
+        autoExecExe:
+          type: string
+        bootMgrExe:
+          type: string
+        cameraConfigXml:
+          type: string
+        cdgDeviceDll:
+          type: string
+        cdgDeviceExDll:
+          type: string
+        dispatchMgrDll:
+          type: string
+        flowBrokerDll:
+          type: string
+        flowBrokerTxt:
+          type: string
+        gprsDll:
+          type: string
+        genParanmTxt:
+          type: string
+        hardwareMgrDll:
+          type: string
+        ivdCameraExe:
+          type: string
+        infoViewerDll:
+          type: string
+        interProcessDll:
+          type: string
+        jobMgrDll:
+          type: string
+        jobSumTemXml:
+          type: string
+        logMgrDll:
+          type: string
+        msgMgrDll:
+          type: string
+        networkMgrExe:
+          type: string
+        otaMgrDll:
+          type: string
+        paymentMgrDll:
+          type: string
+        productSubsTxt:
+          type: string
+        receiptTemXml:
+          type: string
+        storeFwrdMsgTxt:
+          type: string
+        tlvTxt:
+          type: string
+        uiConfigXml:
+          type: string
+        mapMgrDll:
+          type: string
+        ttsMgrDll:
+          type: string
+        hardwareMgrIni:
+          type: string
+        sharedTxt:
+          type: string
+        bmConfigTxt:
+          type: string
+        bmWhiteListTxt:
+          type: string
+        runListTxt:
+          type: string
+        m16FlashExe:
+          type: string
+        loaderExe:
+          type: string
+        singaporeExtraExe:
+          type: string
+        dgtProtoTaximeterDll:
+          type: string
+        screenSaverXml:
+          type: string
+        screenSaverVer:
+          type: string
+
+    MDTGetIvdResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MDTIvdCreateDetails'
+    VehicleByIvdResponse:
+      type: object
+      properties:
+        ivdNo:
+          type: integer
+          example: 50108
+        vehicleId:
+          type: string
+          example: "SHA1232P"
+        imsi:
+          type: string
+          example: "52501610481015"
+        ipAddress:
+          type: string
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace
+          minLength: 1
+          maxLength: 15
+          example: "255.61.68.134"
+          description: ip address.
+        driverId:
+          type: string
+          example: "2556780"
+    InternalServerErrorResponse:
+      required:
+        - error
+        - traceId
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        status:
+          type: string
+          example: "99"
+        error:
+          $ref: '#/components/schemas/ErrorInternal'
+        path:
+          type: string
+          example: </sample-api-path>
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+
+    BadRequestErrorResponse:
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        status:
+          type: string
+          example: "99"
+        error:
+          $ref: '#/components/schemas/BadRequestError'
+        path:
+          type: string
+          example: </sample-api-path>
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+
+    NotFoundErrorResponse:
+      required:
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: 1234567498
+        path:
+          type: string
+          example: /request/to/path
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorNotFound'
+            - type: object
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+
+    UnauthorizedErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+        traceId:
+          type: string
+          example: "1234567498"
+        status:
+          type: string
+          example: "0"
+        path:
+          type: string
+          example: "/request/to/path"
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "UnauthorizedException"
+            message:
+              type: string
+              example: "Exception happened"
+
+    BadRequestError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Multiple errors in user register request"
+        code:
+          type: string
+          example: "badRequest"
+        data:
+          $ref: '#/components/schemas/BadRequestErrorData'
+      required:
+        - code
+          - message
+          - data
+    BadRequestErrorData:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BadRequestFields'
+    BadRequestFields:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Id
+        message:
+          type: array
+          items:
+            type: string
+    ErrorInternal:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: 500
+        message:
+          type: string
+          example: Sample 500 error
+
+    ErrorNotFound:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: Not found exception
+        message:
+          type: string
+          example: Can not find any data
+    MdtLogOffRequest:
+      type: object
+      properties:
+        messageId:
+          type: string
+          example: "131"
+        ivdNo:
+          type: integer
+          example: 50108
+        driverId:
+          type: string
+          example: "225673"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        totalMileage:
+          type: integer
+          example: 564
+        latitude:
+          type: number
+          format: double
+          example: 21.0080522
+        longitude:
+          type: number
+          format: double
+          example: 22.0080533
+        timeStamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+      required:
+        - ivdNo
+        - driverId
+        - totalMileage
+        - timeStamp
+        - messageId
+        - latitude
+        - longitude
+    MdtLogOffResponse:
+      type: object
+      properties:
+        ivdNo:
+          type: integer
+          example: 50108
+        logOffStatus:
+          type: boolean
+          default: true
+          example: true
+        driverId:
+          type: string
+          example: "225673"
+        vehicleId:
+          type: string
+          example: "SHA0335X"
+        timeStamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+        ipAddress:
+          type: string
+          example: "255.105.98.89"
+      required:
+        - ivdNo
+        - driverId
+        - timeStamp
+        - ipAddress
+    VerifyOtpForgotPasswordRequest:
+      type: object
+      properties:
+        messageId:
+          type: string
+          example: "227"
+        ivdNo:
+          type: integer
+          example: 3456
+        mobileNum:
+          type: string
+          example: "65463456"
+        otp:
+          type: string
+          example: "123456"
+      required:
+        - messageId
+        - ivdNo
+        - mobileNum
+        - otp
+    VerifyOtpForgotPasswordResponse:
+      type: object
+      required:
+        - "passApproval"
+        - "ivdInfo"
+      properties:
+        passApproval:
+          type: string
+          example: "0"
+        ivdInfo:
+          type: object
+          required:
+            - "imsi"
+            - "ipAddress"
+            - "tlvFlag"
+          properties:
+            imsi:
+              type: string
+              example: "525016104810154"
+              description: IMSI.
+            ipAddress:
+              type: string
+              example: "10.61.68.131"
+              description: IP Address.
+            tlvFlag:
+              type: boolean
+              example: true
+              description: TLV Flag.
+    MdtChangePinRequest:
+      type: object
+      properties:
+        mobileId:
+          type: integer
+          example: 50108
+        driverId:
+          type: string
+          example: "225566"
+        oldPin:
+          type: string
+          example: "password"
+        newPin:
+          type: string
+          example: "newPassword"
+        messageId:
+          type: string
+          example: "150"
+      required:
+        - messageID
+    MdtChangePinResponse:
+      type: object
+      properties:
+        ivdInfo:
+          type: object
+          properties:
+            imsi:
+              type: string
+              example: "525016104810154"
+            ipAddress:
+              type: "string"
+              example: "10.61.68.131"
+            tlvFlag:
+              type: boolean
+              example: true
+        passApproval:
+          type: "string"
+      required:
+        - passApproval
+        - ivdInfo
+    NetworkErrorResponse:
+      required:
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: 1234567498
+        path:
+          type: string
+          example: /request/to/path
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ConnectionNotFound'
+            - type: object
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+    ConnectionNotFound:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example:
+        message:
+          type: string
+          example: Unable to establish connection for external service
+    MdtPowerUpRequest:
+      type: object
+      properties:
+        messageId:
+          type: string
+          example: "129"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        mobileNo:
+          type: string
+          example: "65343298"
+        ivdNo:
+          type: integer
+          example: 5010
+        timeStamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+        firmwareVersion:
+          type: string
+          example: "1.2"
+        modelNo:
+          type: string
+          example: "2"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        fileList:
+          type: array
+          $ref: '#/components/schemas/FileDetails'
+        selfTestResult:
+          type: string
+          example: "true"
+        imsi:
+          type: string
+          example: "1111111110143"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        vehiclePlateNum:
+          type: string
+          example: "SHB8745P"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+          minimum: 7
+          maximum: 8
+        telcoId:
+          type: string
+          example: "1"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        meterVersion:
+          type: string
+          example: "240"
+        tariffCheckSum:
+          type: string
+          example: "52250"
+        firmwareCheckSum:
+          type: string
+          example: "12846"
+        gisVersion:
+          type: string
+          example: "4.0"
+        mapVersion:
+          type: string
+          example: "2011 1.0"
+        screenSaverVersion:
+          type: string
+          example: "1.10"
+        jobNoBlockStart:
+          type: string
+          example: "70000000"
+          default: "0"
+        jobNoBlockEnd:
+          type: string
+          example: "700000019"
+          default: "0"
+        ivdInfoList:
+          $ref: '#/components/schemas/IVDInfoDetails'
+        ipAddr:
+          type: "string"
+          example: "255.105.98.89"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+      required:
+        - messageId
+        - modelNo
+        - imsi
+        - vehiclePlateNum
+        - telcoId
+        - jobNoBlockStart
+        - jobNoBlockEnd
+        - ipAddr
+    FileDetails:
+      type: array
+      items:
+        type: object
+        properties:
+          fileName:
+            type: "string"
+            example: "Autoexec.bat"
+          fileCheckSum:
+            type: "string"
+            example: "964839499f636dac71b79bc3a43ba0a2"
+    IVDInfoDetails:
+      type: object
+      properties:
+        ivdModel:
+          type: string
+          example: "test12"
+        ivdParam:
+          type: string
+          example: "test"
+        ivdValue:
+          type: string
+          example: "ivdVal"
+    MDTIvdCreateDetails:
+      type: object
+      properties:
+        ivdNo:
+          type: integer
+        scIn:
+          type: string
+        ipAddress:
+          type: string
+        firmwareVer:
+          type: string
+        fareVer:
+          type: string
+        softwareCode:
+          type: string
+        expWayVer:
+          type: string
+        zoneVer:
+          type: string
+        rankVer:
+          type: string
+        locationVer:
+          type: string
+        paraVer:
+          type: string
+        msgVer:
+          type: string
+        companyId:
+          type: integer
+        ota0Ver:
+          type: string
+        autoExecVer:
+          type: string
+        roadPilotVer:
+          type: string
+        zoneDllVer:
+          type: string
+        meterDllVer:
+          type: string
+        comDllVer:
+          type: string
+        waveOnV2MasterListVer:
+          type: string
+        pinPadParaVer:
+          type: string
+        addressVer:
+          type: string
+        productVer:
+          type: string
+        tariffCodesVer:
+          type: string
+        roofDesVer:
+          type: string
+        ipPortVer:
+          type: string
+        ivdConfigVer:
+          type: string
+        storedMsgCfgVer:
+          type: string
+        gprsProvider:
+          type: string
+        meterVer:
+          type: string
+        meterChkSum:
+          type: string
+        pinPadSwVer:
+          type: string
+        loggerVer:
+          type: string
+        phoneNo:
+          type: string
+        genParaVerified:
+          type: string
+        geoRoadPilotVer:
+          type: string
+        geoRoadPilotDataVer:
+          type: string
+        customShellTestLnk:
+          type: string
+        sapphireStartExe:
+          type: string
+        loaderIni:
+          type: string
+        ceteonStartExe:
+          type: string
+        ceteon738Reg:
+          type: string
+        ceteon728Reg:
+          type: string
+        pinPadDllDll:
+          type: string
+        gpsDllDll:
+          type: string
+        verControlExe:
+          type: string
+        f1MeterMajorVer:
+          type: string
+        f1MeterMinorVer:
+          type: string
+        pinPadSerialNo:
+          type: string
+        ezLinkSamSerialNo:
+          type: string
+        parameterVersion:
+          type: string
+        binTableVersion:
+          type: string
+        masterAppVersion:
+          type: string
+        creditAppVersion:
+          type: string
+        netsAppVersion:
+          type: string
+        ePinsAppVersion:
+          type: string
+        ezLinkAppVersion:
+          type: string
+        huModelNumber:
+          type: string
+        huSerialNumber:
+          type: string
+        huFirmwareVersion:
+          type: string
+        puModelNumber:
+          type: string
+        puSerialNumber:
+          type: string
+        puFirmwareVersion:
+          type: string
+        fullBlackListCan:
+          type: string
+        fullBlackListRange:
+          type: string
+        smallBlackListCan:
+          type: string
+        smallBlackListRange:
+          type: string
+        videoEnabled:
+          type: boolean
+        loyaltyAppVersion:
+          type: string
+        dashAppVersion:
+          type: string
+        tlvFlag:
+          type: boolean
+        autoExecExe:
+          type: string
+        bootMgrExe:
+          type: string
+        cameraConfigXml:
+          type: string
+        cdgDeviceDll:
+          type: string
+        cdgDeviceExDll:
+          type: string
+        dispatchMgrDll:
+          type: string
+        flowBrokerDll:
+          type: string
+        flowBrokerTxt:
+          type: string
+        gprsDll:
+          type: string
+        genParanmTxt:
+          type: string
+        hardwareMgrDll:
+          type: string
+        ivdCameraExe:
+          type: string
+        infoViewerDll:
+          type: string
+        interProcessDll:
+          type: string
+        jobMgrDll:
+          type: string
+        jobSumTemXml:
+          type: string
+        logMgrDll:
+          type: string
+        msgMgrDll:
+          type: string
+        networkMgrExe:
+          type: string
+        otaMgrDll:
+          type: string
+        paymentMgrDll:
+          type: string
+        productSubsTxt:
+          type: string
+        receiptTemXml:
+          type: string
+        storeFwrdMsgTxt:
+          type: string
+        tlvTxt:
+          type: string
+        uiConfigXml:
+          type: string
+        mapMgrDll:
+          type: string
+        ttsMgrDll:
+          type: string
+        hardwareMgrIni:
+          type: string
+        sharedTxt:
+          type: string
+        bmConfigTxt:
+          type: string
+        bmWhiteListTxt:
+          type: string
+        runListTxt:
+          type: string
+        m16FlashExe:
+          type: string
+        loaderExe:
+          type: string
+        singaporeExtraExe:
+          type: string
+        dgtProtoTaximeterDll:
+          type: string
+        screenSaverXml:
+          type: string
+        screenSaverVer:
+          type: string
+      required:
+        - tlvFlag
+        - ivdNo
+        - genParaVerified
+    MdtPowerUpResponse:
+      type: object
+      properties:
+        vehicleTypeId:
+          type: integer
+          example: 1
+        paymentModuleIp:
+          type: string
+          example: "255.105.98.89"
+        paymentModulePort:
+          type: integer
+          example: 8080
+        jobNumberBlockStart:
+          type: integer
+          format: int64
+          example: 345697653L
+        jobNumberBlockEnd:
+          type: integer
+          format: int64
+          example: 345697689L
+        companyId:
+          type: string
+          example: "1"
+        singJb:
+          type: boolean
+          example: false
+        enableOtpVerification:
+          type: boolean
+          example: true
+        ipAddress:
+          type: string
+          example: 255.105.98.89
+        ivdNo:
+          type: integer
+          example: 502356
+        powerUpDt:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+    IVDConfigRequest:
+      type: object
+      properties:
+        messageId:
+          type: string
+          example: "143"
+        ivdDeviceConfig:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              deviceInfoType:
+                type: integer
+              deviceComponentID:
+                type: integer
+              facilityComponentID:
+                type: integer
+              deviceAttributeId:
+                type: integer
+              deviceAttributeValue:
+                type: string
+                pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+            example:
+              - deviceInfoType: 1
+                deviceComponentID: 8202
+                facilityComponentID: 8202
+                deviceAttributeId: 5
+                deviceAttributeValue: "DIGITAX"
+              - deviceInfoType: 1
+                deviceComponentID: 8197
+                facilityComponentID: 8197
+                deviceAttributeId: 2
+                deviceAttributeValue: "MID"
+              - deviceInfoType: 1
+                deviceComponentID: 8198
+                facilityComponentID: 8198
+                deviceAttributeId: 2
+                deviceAttributeValue: "ELITETAX"
+            required:
+              - deviceInfoType
+              - deviceComponentID
+              - facilityComponentID
+              - deviceAttributeId
+              - deviceAttributeValue
+      required:
+        - messageId
+        - ivdDeviceConfig
+    IVDConfigResponse:
+      type: object
+      properties:
+        ipAddress:
+          type: string
+          example: "255.22.54.10"
+      required:
+        - ipAddress
+    MdtForgotPasswordRequest:
+      type: object
+      properties:
+        mobileNo:
+          type: "string"
+          example: "65221321"
+        ivdNo:
+          type: integer
+          example: 502356
+        vehiclePlateNum:
+          type: "string"
+          example: "SHX-1234"
+        messageId:
+          type: "string"
+          example: "226"
+      required:
+        - mobileNo
+        - ivdNo
+    MdtForgotPasswordResponse:
+      type: object
+      properties:
+        ivdInfo:
+          type: object
+          properties:
+            imsi:
+              type: "string"
+              example: "525016104810154"
+            ipAddress:
+              type: "string"
+              example: "10.61.68.131"
+            tlvFlag:
+              type: boolean
+              example: true
+        passApproval:
+          type: "string"
+    IvdPingUpdateRequest:
+      type: object
+      properties:
+        ivdPingData:
+          type: array
+          $ref: '#/components/schemas/IvdPingDataDetails'
+        requestNumber:
+          type: string
+          example: "3432423"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        sequenceNumber:
+          type: string
+          example: "1"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+        ivdNo:
+          type: integer
+          example: 50123
+        messageId:
+          type: string
+          example: "035"
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+      required:
+        - requestNumber
+        - sequenceNumber
+        - ivdPingData
+        - ivdNo
+        - messageId
+    IvdPingDataDetails:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        properties:
+          pingMessageEvent:
+            type: string
+            pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace character
+          timestamp:
+            type: string
+            format: date-time
+        example:
+          - pingMessageEvent: "APP_SEND"
+            timestamp: "2024-06-10T15:34:29.302Z"
+          - pingMessageEvent: "APP_RESV"
+            timestamp: "2024-06-10T15:34:29.302Z"
+          - pingMessageEvent: "ESB_IVD_SEND"
+            timestamp: "2024-06-10T15:34:29.302Z"
+          - pingMessageEvent: "ESB_APP_SEND"
+            timestamp: "2024-06-10T15:34:29.302Z"
+          - pingMessageEvent: "ESB_APP_RESV"
+            timestamp: "2024-06-10T15:34:29.302Z"
+          - pingMessageEvent: "ESB_IVD_RESV"
+            timestamp: "2024-06-10T15:34:29.302Z"
+    IVDPingResponse:
+      type: object
+      properties:
+        ipAddress:
+          type: string
+          example: "10.12.11.82"
+    MDTLogOnRequest:
+      type: object
+      properties:
+        messageId:
+          type: string
+          example: "130"
+        mobileNumber:
+          type: string
+          example: "65123213323"
+        X Offset:
+          type: number
+          format: double
+          example: 21.0080522
+          x-google-fleet-mapping-field: latitude
+        Y Offset:
+          type: number
+          format: double
+          example: 105.5353634
+          x-google-fleet-mapping-field: longitude
+        ivdNo:
+          type: integer
+          example: 50108
+        logonTimeStamp:
+          type: string
+          format: date-time
+          example: "2024-06-10T15:34:29.302Z"
+        driverPin:
+          type: string
+          example: ""
+        pendingOnCallJobNo:
+          type: string
+          example: "78001722942"
+        totalMileage:
+          type: integer
+          example: 538
+      required:
+        - messageId
+        - X Offset
+        - Y Offset
+        - ivdNo
+        - logonTimeStamp
+        - driverPin
+        - pendingOnCallJobNo
+        - totalMileage
+    MDTLogOnResponse:
+      type: object
+      properties:
+        logonStatus:
+          type: "string"
+          example: "U"
+        driverName:
+          type: string
+          example: "test"
+        driverId:
+          type: string
+          example: "test124"
+        retainIvdStatus:
+          type: integer
+          example: 0
+        cjOfferTimeout:
+          type: integer
+          example: 0
+        product:
+          type: array
+          items:
+            type: object
+            properties:
+              ivdCode:
+                type: integer
+                example: 1234
+        pendingOnCallJobStatus:
+          type: integer
+          example: 0
+        loyaltyStatus:
+          type: boolean
+          example: 0
+        taxiTourGuide:
+          type: boolean
+          example: false
+        rooftopMessages:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "HELLO"
+              colour:
+                type: string
+                example: "0"
+              scroll:
+                type: boolean
+                example: true
+              speed:
+                type: string
+                example: "5"
+              bitmap:
+                type: string
+                example: "3"
+        autoLogOffTimeout:
+          type: number
+          example: 1800
+        maxRejectCount:
+          type: integer
+          example: 10
+        maxMonitorDuration:
+          type: integer
+          example: 3600
+        warningThreshold:
+          type: integer
+          example: 3
+        starDriver:
+          type: boolean
+          example: false
+        starDriverGreeting:
+          type: string
+          example: "Good Day! You are travelling with our Super Star driver"
+        mdtBlockingSyncInterval:
+          type: integer
+          example: 12
+        autoBidFlag:
+          type: integer
+          example: 1
+        defaultAutoBidAccept:
+          type: integer
+          example: 2
+        autoBidJobOfferTimeOut:
+          type: integer
+          example: 5
+        autoStcDistance:
+          type: integer
+          example: 300
+        stcTrackingDistance:
+          type: integer
+          example: 300
+        autoAcceptDialogBoxTimeOut:
+          type: integer
+          example: 3
+        uniqueDriverId:
+          type: string
+          example: test
+        adminGstFlag:
+          type: boolean
+          example: false
+        forceChangePwd:
+          type: boolean
+          example: false
+        forgotPwdwithOtp:
+          type: boolean
+          example: false
+        vehiclePlateNum:
+          type: string
+          example: "SHB3189P"
+        ipAddress:
+          type: string
+          example: "255.105.98.89"
+        imsi:
+          type: string
+          example: "1111111110143"
+
+    JobNumberBlockRequest:
+      required:
+        - vehicleId
+      type: object
+      properties:
+        vehicleId:
+          type: string
+          example: "TST8020A"
+        jobNoBlockStart:
+          type: string
+          example: "770000520"
+        jobNoBlockEnd:
+          type: string
+          example: "770000539"
+
+    JobNumberBlockResponse:
+        type: object
+        properties:
+          vehicleId:
+            type: string
+            example: "TST8020A"
+          jobNoBlockStart:
+            type: string
+            example: "770000520"
+          jobNoBlockEnd:
+            type: string
+            example: "770000539"
+          isNew:
+            type: boolean
+            example: true
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

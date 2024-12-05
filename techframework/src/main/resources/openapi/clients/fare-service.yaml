@@ -1,0 +1,2086 @@
+---
+openapi: 3.0.0
+info:
+  title: Fare Service
+  description: Fare Service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://me.zig.live
+    description: SwaggerHub API Auto Mocking
+paths:
+
+  ################# Fares Controller #################
+  # [POST] Get Tariff for booking action
+  /v1.0/fares/tariffs:
+    post:
+      tags:
+        - Fare Controller
+      summary: Compute and return tariff
+      description: To compute and return the fare details
+      operationId: getTariff
+      requestBody:
+        description: JSON object of a fare request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FareRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FareResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    get:
+      summary: Get tariff descriptions from table company_tariff_type_code by codes for batches
+      description: Get tariff descriptions from table company_tariff_type_code by codes  for batches
+      operationId: getTariffDescriptions
+      parameters:
+        - in: query
+          name: codes
+          description: the array string of tariff type codes, if null then return all
+          style: form
+          explode: false
+          example: codes=CBKC,PDT
+          schema:
+            type: array
+            items:
+              type: string
+      tags:
+        - Fare Controller
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/tariffDescriptionByCodeResponse'
+        '400':
+          description: Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [POST] Calculate booking fees
+  /v1.0/fares/booking-fees:
+    post:
+      tags:
+        - Fare Controller
+      summary: Get booking-fee from bookingFeeList for the flatFareType
+      description: Get booking-fee from bookingFeeList for the flatFareType
+      operationId: calculateBookingFee
+
+      requestBody:
+        required: true
+        description: JSON object of booking Fee Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculateBookingFeeRequest'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculateBookingFeeResponse'
+        '400':
+          description: Request Param cannot be invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [POST] Calculate booking fees by list
+  /v1.0/fares/booking-fee-list:
+    post:
+      tags:
+        - Fare Controller
+      summary: Get booking-fee list from  bookingFee for list of flatFareType
+      description: Get booking-fee list from bookingFee for list of flatFareType
+      operationId: calculateBookingFeeByList
+
+      requestBody:
+        required: true
+        description: JSON object of booking Fee Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculateBookingFeeByListRequest'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculateBookingFeeByListResponse'
+        '400':
+          description: Request Param cannot be invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [GET] Get Tariff details
+  /v1.0/fares/tariff/{code}:
+    get:
+      summary: Get tariff descriptions from table company_tariff_type_code by code
+      description: Get tariff descriptions from table company_tariff_type_code by code
+      operationId: getTariffDescription
+      parameters:
+        - in: path
+          name: code
+          description: tariff type code
+          schema:
+            type: string
+            example: "code"
+            minLength: 1
+            maxLength: 10
+          required: true
+      tags:
+        - Fare Controller
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tariffDescriptionByCodeResponse'
+        '400':
+          description: Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [POST] Get Levies on Total Trip Fare
+  /v1.0/fares/levies:
+    post:
+      summary: Get levy on total trip fare
+      description: Get levy on total trip fare
+      operationId: getLevyOnTotalTripFare
+      tags:
+        - Fare Controller
+      requestBody:
+        required: true
+        description: Input Ids
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevyRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevyResponseData'
+        '400':
+          description: Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  ################# Platform Fee Configuration Management #################
+  # [POST] Add configurations for Platform Fees
+  # [GET] Get configurations list for Platform Fees
+  /v1.0/fares/platform-fees:
+    post:
+      tags:
+        - Platform Fee Configuration Management
+      summary: Add configurations of platform fee
+      description: Add configurations of platform fee
+      operationId: addPlatformFeeConfigs
+      requestBody:
+        description: JSON object of a platform configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlatformFeeConfigurationRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePlatformFeeConfigurationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+    get:
+      tags:
+        - Platform Fee Configuration Management
+      summary: get configurations list of platform fee
+      description: get configurations list of platform fee
+      operationId: getPlatformFeeConfigurationsList
+      parameters:
+        - in: query
+          name: bookingChannel
+          schema:
+            type: string
+          description: Booking Channel
+          required: false
+        - in: query
+          name: productId
+          schema:
+            type: string
+          description: Product Id
+          required: false
+        - in: query
+          name: vehicleGroupId
+          schema:
+            type: string
+          description: Vehicle Group id
+          required: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlatformFeeConfigurationsListResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+  # [PUT] Update configurations for Platform Fees (only for limit amounts and time)
+  # [GET] Get Platform Fee configuration details
+  # [DELETE] Delete Platform Fee configuration
+  /v1.0/fares/platform-fees/{id}:
+    put:
+      tags:
+        - Platform Fee Configuration Management
+      summary: Update configurations of platform fee
+      description: Update configurations of platform fee
+      operationId: updatePlatformFeeConfigs
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: id configuration
+          required: true
+      requestBody:
+        description: JSON object of a update platform fee configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlatformFeeConfigurationRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePlatformFeeConfigurationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+    get:
+      tags:
+        - Platform Fee Configuration Management
+      summary: Get platform fee configuration detail for the given Id
+      description: Get platform fee configuration detail for the given Id
+      operationId: getPlatformFeeConfigurationById
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: Configuration Id
+          required: true
+      responses:
+        '200':
+          description: Successfully get platform fee configuration detail for the given Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlatformFeeConfigurationDetailResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+    delete:
+      tags:
+        - Platform Fee Configuration Management
+      summary: Delete platform fee configuration for the given Id
+      description: Delete platform fee configuration for the given Id
+      operationId: deletePlatformFeeConfigById
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: Configuration Id
+          required: true
+      responses:
+        '200':
+          description: Successfully deleted platform fee configuration for the given Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletePlatformFeeResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [POST] Get configurations for Platform Fees by list
+  /v1.0/fares/getPlatformFeeByList:
+    post:
+      tags:
+        - Platform Fee Configuration Management
+      summary: get configurations list of platform fee from a request list
+      description: get configurations list of platform fee from a request list
+      operationId: getPlatformFeeConfigurationsByList
+      requestBody:
+        required: true
+        description: JSON object of getting platform fee configuration list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPlatformFeeByListRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlatformFeeByListResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  ################# Additional Charge Fee Configuration Management #################
+  # [GET] Get configurations list for Additional Charge Fees
+  /v1.0/fares/additional-charge-fees:
+    get:
+      tags:
+        - Additional Charge Fee Configuration Management
+      summary: Get configurations list of additional charge fee which is Enabled
+      description: get configurations list of additional charge fee which is Enabled
+      operationId: getAdditionalChargeFeeConfigurationsList
+      parameters:
+        - in: query
+          name: chargeIds
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+              minimum: 1
+          style: form
+          explode: false
+          description: Charge Ids in array
+          example: chargeIds=1,2,3
+        - in: query
+          name: chargeTypes
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          description: Charge Typies in array
+          example: chargeTypes=DRIVER_FEE,VEHICLE_FEE
+        - in: query
+          name: bookingChannel
+          schema:
+            type: string
+          description: Booking Channel
+          required: false
+        - in: query
+          name: productId
+          schema:
+            type: string
+          description: Product Id
+          required: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdditionalChargeFeeConfigurationsListResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+
+  # [GET] Get Additional Charge Fee configuration details
+  /v1.0/fares/additional-charge-fees/{chargeId}:
+    get:
+      tags:
+        - Additional Charge Fee Configuration Management
+      summary: Get additional charge configuration details by chargeId which is Enabled
+      description: Get additional charge configuration details by chargeId which is Enabled
+      operationId: getAdditionalChargeFeeConfigurationByChargeId
+      parameters:
+        - in: path
+          name: chargeId
+          schema:
+            type: string
+          description: Additional ChargeId
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdditionalChargeFeeConfigurationsListResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+
+
+  ################# Fare Configuration Management #################
+  # [GET] Load Fare Configs into cache
+  /v1.0/fares/load-configs:
+    get:
+      tags:
+        - Fare Configuration Management
+      summary: Load the FareConfigs to cache
+      description: It will load the list of FareConfigs to the cache
+      operationId: loadFareConfig
+      responses:
+        '200':
+          description: Loaded configs Successfully.
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+    ################# Refresh Cache #################
+  /v1.0/fares/refreshCache:
+    delete:
+      summary: Refresh the cache
+      operationId: refreshCache
+      tags:
+        - Fare Configuration Management
+      requestBody:
+        required: true
+        description: cacheDetails
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cacheDetails'
+      responses:
+        '200':
+          description: Successfully refreshed the cache based on cacheName,cacheKey
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  ################# Booking Payments #################
+  # [GET] Search booking payments
+  /v1.0/fares/booking-payments:
+    get:
+      tags:
+        - Booking Payments
+      summary: Search booking payment by jobNo and payment status
+      description: Search booking payment by jobNo and payment status
+      operationId: searchBookingPayments
+      parameters:
+        - in: query
+          name: skip
+          schema:
+            type: integer
+            default: 0
+          description: specifies the maximum number of documents to skip, default is 0.
+          required: false
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: specifies the maximum number of documents to pass along, default is 10.
+          required: false
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+            default: paymentId
+          description: Default is ascending order by 'paymentId'.
+          required: false
+        - in: query
+          name: jobNo
+          schema:
+            type: string
+          description: Job Number
+          required: true
+        - in: query
+          name: paymentTypes
+          schema:
+            type: array
+            items:
+              type: string
+          description: Payment types List
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchBookingPaymentsResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '400':
+          description: Request Param cannot be invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [GET] Get Payment Tariff
+  /v1.0/fares/booking-payments/tariff/{jobNo}:
+    get:
+      tags:
+        - Booking Payments
+      summary: Get payment tariff
+      operationId: getPaymentTariffByJobNo
+      parameters:
+        - in: path
+          name: jobNo
+          description: Job Number
+          schema:
+            type: string
+            example: "123345"
+            minLength: 1
+            maxLength: 12
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPaymentTariffResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [POST] Get Tariff for booking action
+  /v1.0/fares/ivd/tariffs:
+    post:
+      summary: Get tariff calculation
+      description: Get tariff calculation
+      operationId: getTariffCalculation
+      tags:
+        - Booking Payments
+      requestBody:
+        required: true
+        description: Input Ids
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IvdFareRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IvdFareResponse'
+        '400':
+          description: Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  ################# Operations Controller (from RCSA) #################
+  # [GET] Get Flat Fare Details (from RCSA)
+  /v1.0/fares/operations/getFlatFareDetailsFromRCSA:
+    get:
+      summary: Get Flatfare Details
+      description: Get Flatfare Details
+      operationId: getFlatFareDetailsFromRCSA
+      tags:
+        - Operations Controller (from RCSA)
+      parameters:
+        - in: query
+          name: startingAddressreference
+          description: Specifies the starting address reference
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: endingAddressreference
+          description: Specifies the ending address reference
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: intermediateAddressRef
+          description: Specifies the intermediate address reference
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: deviceType
+          description: Specifies the device type
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: countrycode
+          description: Specifies the country code
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: mobile
+          description: Specifies the mobile number
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: taxitypeId
+          description: Specifies the taxi type id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: jobType
+          description: Specifies the Job Type
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFlatFareDetailsFromUIResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '400':
+          description: Request Param cannot be invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [GET] Add Adjusted Fare Amount (from job, indirectly from RCSA)
+  /v1.0/fares/operations/addAdjustedFareAmount:
+    post:
+      summary: Add adjusted fare amount
+      description: Add adjusted fare amount. This interface is specifically designed for use by ngp-ops-rcsa-backend-svc.
+      operationId: addAdjustedFareAmount
+      tags:
+        - Operations Controller (from RCSA)
+      requestBody:
+        required: true
+        description: Add adjusted fare amount request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAdjustedFareAmountRequest'
+      responses:
+        '200':
+          description: Add adjusted fare amount success or not
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '400':
+          description: Request Param cannot be invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # [GET] Get The Last Booking Payment With Tariffs (from RCSA)
+  /v1.0/fares/operations/booking-payment/{jobNo}/last:
+    get:
+      summary: Get The Last Booking Payment With Tariffs
+      description: Get The Last Booking Payment With Tariffs, if not found then return null
+      operationId: getLastBookingPaymentFromRCSA
+      tags:
+        - Operations Controller (from RCSA)
+      parameters:
+        - in: path
+          name: jobNo
+          description: job no
+          required: true
+          schema:
+            type: string
+            example: 123
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLastBookingPaymentResponse'
+        '400':
+          description: Request Param cannot be invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+components:
+  schemas:
+    cacheDetails:
+      type: object
+      properties:
+        cacheName:
+          type: string
+          example: FARE_BOOKING_FEE_CONFIG
+        cacheKey:
+          type: string
+          example: ALL
+    tariffDescriptionByCodeResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "IMF"
+        description:
+          type: string
+          example: "International monetary fund"
+        companyId:
+          type: string
+          example: "CTPL"
+        isExtraSurcharge:
+          type: boolean
+          example: true
+        ereceiptShowUnit:
+          type: boolean
+          example: true
+        ereceiptDesc:
+          type: string
+          example: "Extra distance"
+    SampleResponse:
+      type: string
+      example: "Fare Svc Application is running"
+    BadRequestErrorResponse:
+      required:
+        - timestamp
+        - path
+        - traceId
+        - error
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "daab7a214b750ac085fc14411f1731b3"
+        error:
+          $ref: '#/components/schemas/BadRequestError'
+        path:
+          type: string
+          example: "/add-config"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+    BadRequestError:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Multiple errors in user register request"
+        code:
+          type: string
+          example: "badRequest"
+        data:
+          $ref: '#/components/schemas/BadRequestErrorData'
+    BadRequestErrorData:
+      type: object
+      properties:
+        fields:
+          type: array
+          items :
+            $ref: '#/components/schemas/BadRequestFields'
+    BadRequestFields:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Id
+        message:
+          type: array
+          items:
+            type: string
+    CreatePlatformFeeConfigurationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlatformFeeConfigurationData'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    GetPlatformFeeConfigurationsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFeeConfigurationData'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    GetPlatformFeeConfigurationDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlatformFeeConfigurationData'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    PlatformFeeConfigurationData:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        bookingChannel:
+          type: string
+          example: "IPHONE"
+        vehicleGroupId:
+          type: number
+          example: 1
+        productId:
+          type: string
+          example: "FLAT-001"
+        platformFeeApplicability:
+          type: string
+          example: "YES"
+        remarks:
+          type: string
+          example: "remarks"
+        platformFeeThresholdLimit:
+          type: number
+          format: double
+          example: 1.2
+        lowerPlatformFee:
+          type: number
+          format: double
+          example: 1.2
+        upperPlatformFee:
+          type: number
+          format: double
+          example: 1.2
+        effectiveFrom:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        effectiveTo:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        deleted:
+          type: boolean
+          example: false
+        createdDate:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        createdBy:
+          type: string
+          example: system
+        updatedDate:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        updatedBy:
+          type: string
+          example: system
+    CreatePlatformFeeConfigurationRequest:
+      type: object
+      properties:
+        bookingChannel:
+          type: string
+          example: "IPHONE"
+        vehicleGroupId:
+          type: integer
+          example: 1
+        productId:
+          type: string
+          example: "FLAT-001"
+        platformFeeApplicability:
+          type: string
+          example: "YES"
+        remarks:
+          type: string
+          example: "remarks"
+        platformFeeThresholdLimit:
+          type: number
+          format: double
+          example: 1.2
+        lowerPlatformFee:
+          type: number
+          format: double
+          example: 1.2
+        upperPlatformFee:
+          type: number
+          format: double
+          example: 1.2
+        effectiveFrom:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        effectiveTo:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    GetAdditionalChargeFeeConfigurationsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalChargeFeeConfigurationData'
+
+    AdditionalChargeFeeConfigurationData:
+      type: object
+      properties:
+        chargeId:
+          type: integer
+          example: 1
+        chargeType:
+          type: string
+          example: "DRIVER_FEE"
+        chargeKey:
+          type: string
+          example: "charge_threshold"
+        chargeValue:
+          type: number
+          example: 16.11
+        chargeDescription:
+          type: string
+          example: "Driver Fee Charge Threshold"
+        bookingChannel:
+          type: string
+          example: "IPHONE"
+        productId:
+          type: string
+          example: "FLAT-001"
+
+    BookingChannelEnum:
+      type: string
+      enum:
+        - IPHONE
+        - ANDROID
+        - CSA
+        - SMS
+        - IVR
+        - IRD
+        - IRD_POSTAL
+        - OPENAPI
+        - MWF
+        - H5ALIPAY
+        - H5
+        - H5DBSPAYLAH
+        - H5LAZADA
+        - H5KRISPLUS
+    ApplicableTypeEnum:
+      type: string
+      enum:
+        - 'YES'
+        - 'NO'
+        - 'WAIVE'
+
+    LevyRequest:
+      type: object
+      properties:
+        totalFareAmount:
+          type: number
+          example: 15.5
+        bookingTime:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        pickupTime:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        bookingId:
+          type: string
+          example: 790000000000
+        productId:
+          type: string
+          example: STD-001
+        vehicleGroupId:
+          type: string
+          example: 1
+        vehicleId:
+          type: string
+          example: 1
+        jobNo:
+          type: string
+          example: 123456
+        driverId:
+          type: string
+          example: SH001
+        companyId:
+          type: string
+          example: 01
+        setDownTime:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        isLevyWaive:
+          type: boolean
+          example: false
+        gstAmount:
+          type: number
+          example: 1.2
+        fixedPrice:
+          type: number
+          example: 11.3
+
+    LevyResponseData:
+      type: object
+      properties:
+        levyAmount:
+          type: number
+          example: 12.75
+        discountAmount:
+          type: number
+          example: 2.75
+        isLevyWaive:
+          type: boolean
+          example: false
+        tier:
+          type: integer
+          example: 1
+        levyFormula:
+          type: string
+          example: T1(_P5)(_CP2)_DP1
+        dispatchFee:
+          type: number
+          example: 1
+        gstInclusive:
+          type: boolean
+          example: false
+        fixedPrice:
+          type: number
+          example: 11.3
+
+    UpdatePlatformFeeConfigurationRequest:
+      type: object
+      properties:
+        platformFeeApplicability:
+          type: Enum
+          $ref: '#/components/schemas/ApplicableTypeEnum'
+        remarks:
+          type: string
+          example: "remarks"
+        platformFeeThresholdLimit:
+          type: number
+          format: double
+          example: 1.2
+        lowerPlatformFee:
+          type: number
+          format: double
+          example: 1.2
+        upperPlatformFee:
+          type: number
+          format: double
+          example: 1.2
+        effectiveFrom:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        effectiveTo:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    UpdatePlatformFeeConfigurationResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlatformFeeConfigurationData'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    DeletePlatformFeeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "deleted"
+
+    FareRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          example: NEW
+        bookingTime:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        bookingId:
+          type: string
+          example: 01d
+        pickupTime:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        productId:
+          type: string
+          example: FLAT-001
+        accountId:
+          type: string
+          example: 12345
+        paymentMethod:
+          type: string
+          default: "ON_BOARD"
+          example: ON BOARD
+        vehicleTypeId:
+          type: string
+          example: "1"
+        payment:
+          $ref: '#/components/schemas/Payment'
+        pickupZone:
+          type: string
+          example: "01"
+        destinationZone:
+          type: string
+          example: "02"
+        jobNo:
+          type: string
+          example: "21938723"
+        jobType:
+          type: string
+          example: NEW
+        tripNo:
+          type: string
+          example: 123456
+        companyId:
+          type: string
+          example: 123456
+        chargeable:
+          type: boolean
+          default: false
+          example: true
+        extraCharges:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtraChargeDetail'
+        flatFare:
+          type: number
+          example: 10.98
+
+    JobTypeEnum:
+      type: string
+      enum:
+        - 'ADVANCE'
+        - 'IMMEDIATE'
+        - 'STREET'
+    BookingActionTypeEnum:
+      type: string
+      enum:
+        - 'NEW'
+        - 'CANCEL'
+        - 'MODIFY'
+        - 'NOSHOW'
+    PaymentMethodEnum:
+      type: string
+      enum:
+        - 'ON BOARD'
+        - 'INVOICE'
+        - 'CABCHARGE'
+        - 'CREDIT CARD'
+        - 'NETS'
+        - 'PAYLAH'
+        - 'ALIPAY'
+        - 'LAZADA'
+        - 'KRISPLUS'
+
+    Tariff:
+      type: object
+      properties:
+        tariffTypeCode:
+          type: string
+        quantity:
+          type: integer
+    ExtraChargeDetail:
+      type: object
+      properties:
+        tariffTypeCode:
+          type: string
+          example: "CDA"
+        quantity:
+          type: integer
+          example: 1
+    TariffList:
+      type: object
+      properties:
+        tariffTypeCode:
+          type: string
+          example: "CBKC"
+        tariffUnit:
+          type: integer
+          example: 1
+        discountedTotalAmount:
+          type: number
+          format: double
+          example: 1.2
+        discountedCurrency:
+          type: string
+          example: "SGD"
+        description:
+          type: string
+          example: PDT FLAT FEE
+        fare:
+          type: number
+          example: 10.98
+        levy:
+          type: number
+          example: 10.98
+    Payment:
+      type: object
+      properties:
+        paidAmount:
+          type: number
+          format: double
+          example: 10.00
+        paymentRemarks:
+          type: string
+          example: "remarks"
+    FareResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FareResponseData'
+    FareResponseData:
+      type: object
+      properties:
+        bookingFee:
+          type: number
+          example: 20.00
+        levy:
+          type: number
+          example: 1.00
+        gstInclusive:
+          type: boolean
+          example: true
+        collectFare:
+          type: boolean
+          example: true
+        tariffs:
+          type: array
+          items:
+            $ref: '#/components/schemas/TariffList'
+
+    CalculateBookingFeeRequest:
+      type: object
+      properties:
+        jobType:
+          type: enum
+          $ref: '#/components/schemas/JobTypeEnum'
+          remarks:
+            type: string
+            example: "IMMEDIATE"
+        isHoliday:
+          type: boolean
+          example: true
+        vehicleTypeId:
+          type: string
+          example: "1"
+        productId:
+          type: string
+          example: "FLAT-001"
+        requestDate:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        flatFareType:
+          type: enum
+          $ref: '#/components/schemas/FlatFareTypeEnum'
+          remarks:
+            type: string
+            example: "StandardFlatFare"
+
+    FlatFareTypeEnum:
+      type: string
+      enum:
+        - LimoFlatFare
+        - StandardFlatFare
+        - EstStandardFlatFare
+
+    CalculateBookingFeeResponse:
+      type: object
+      properties:
+        bookingFee:
+          type: number
+          example: "8.7"
+
+    InternalServerErrorResponse:
+      required:
+        - traceId
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        error:
+          $ref: '#/components/schemas/ErrorInternal'
+        path:
+          type: string
+          example: /request/to/path
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    NotFoundErrorResponse:
+      required:
+        - traceId
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: 1234567498
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorNotFound'
+        path:
+          type: string
+          example: /request/to/path
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+    NetworkErrorResponse:
+      required:
+        - traceId
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: 1234567498
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ConnectionNotFound'
+        path:
+          type: string
+          example: /request/to/path
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+
+    ErrorInternal:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: 500
+        message:
+          type: string
+          example: Sample 500 error
+
+    ErrorNotFound:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: Not found exception
+        message:
+          type: string
+          example: Can not find any data
+    ConnectionNotFound:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: Not found exception
+        message:
+          type: string
+          example: Unable to establish connection for external service
+    SearchBookingPaymentsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchBookingPaymentsResponseItem'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+    SearchBookingPaymentsResponseItem:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          example: 2640
+        bookingId:
+          type: string
+          example: 100000123000
+        jobNo:
+          type: string
+          example: 10097971
+        payment:
+          type: number
+          format: BigDecimal
+          example: 20
+        totalAmountDue:
+          type: number
+          format: BigDecimal
+          example: 8
+        paymentType:
+          type: string
+          example: NEW
+        chequeVochNum:
+          type: string
+          example: null
+        bankBranch:
+          type: string
+          example: null
+        jobQuantity:
+          type: number
+          format: Integer
+          example: 1
+        currencyCode:
+          type: string
+          example: SGD
+        levyAmount:
+          type: number
+          format: BigDecimal
+          example: 0.5
+        paymentRemarks:
+          type: string
+          example: One Way Transfer
+        gst:
+          type: number
+          format: BigDecimal
+          example: 0
+        gstInclusive:
+          type: boolean
+          example: false
+        fareAdjustedType:
+          type: string
+          example: null
+        fareAdjustedAmount:
+          type: number
+          format: BigDecimal
+          example: null
+
+    GetPaymentTariffResponse:
+      type: object
+      properties:
+        paymentTariffList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentTariffList'
+    PaymentTariffList:
+      type: object
+      properties:
+        tariffCode:
+          type: string
+          example: "CBKC"
+        units:
+          type: integer
+          example: 1
+    IvdFareRequest:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          example: 123456
+        vehicleId:
+          type: string
+          example: 1
+        ivdCode:
+          type: string
+          example: 12345
+        tripNo:
+          type: string
+          example: 123456
+        corpCardNo:
+          type: string
+          example: 01
+        accountId:
+          type: string
+          example: 123456
+        tariffList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtraChargeDetail'
+        payment:
+          type: string
+          example: CASH
+    IvdFareResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/IvdFareResponseData'
+    IvdFareResponseData:
+      type: object
+      properties:
+        bookingFee:
+          type: number
+          example: 20.00
+        levy:
+          type: number
+          example: 1.00
+        gstInclusive:
+          type: boolean
+          example: true
+        collectFare:
+          type: boolean
+          example: true
+        gstAmount:
+          type: number
+          example: 1.00
+        tariffList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TariffList'
+    TariffTypeCodeEnum:
+      type: string
+      enum:
+        - 'PDT'
+        - 'ABKC'
+        - 'CBKC'
+        - 'AMDC'
+        - 'CCLC'
+        - 'NSC'
+        - 'WTC'
+    GetPlatformFeeByListResponse:
+      type: object
+      properties:
+        platformFeeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFeeConfigurationData'
+    GetPlatformFeeByListRequest:
+      type: object
+      properties:
+        bookingChannel:
+          type: string
+          example: "IPHONE"
+        platformFeeRequestList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFeeRequestListData'
+    PlatformFeeRequestListData:
+      type: object
+      properties:
+        vehicleGroupId:
+          type: string
+          example: 1
+        productId:
+          type: string
+          example: "FLAT-001"
+
+    ######### Objects used in Operations Controller
+    # GetFlatFareDetailsFromUIResponse
+    GetFlatFareDetailsFromUIResponse:
+      type: object
+      properties:
+        fareID:
+          type: string
+        flagDown:
+          type: number
+          format: double
+        tier1Fare:
+          type: number
+          format: double
+        tier2Fare:
+          type: number
+          format: double
+        waitTimeFare:
+          type: number
+          format: double
+        peakHrFare:
+          type: number
+          format: double
+        midNightFare:
+          type: number
+          format: double
+        bookingFee:
+          type: number
+          format: double
+        locSurCharge:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocSurcharge'
+        priorityCharged:
+          type: boolean
+        pricePerKm:
+          type: number
+          format: double
+        dpSurgePercent:
+          type: number
+          format: double
+        dpSurgeAmt:
+          type: number
+          format: double
+        dpAplydSurgeAmt:
+          type: number
+          format: double
+        dpBaseFareForSurge:
+          type: number
+          format: double
+        dpFinalFare:
+          type: number
+          format: double
+        meteredBaseFare:
+          type: number
+          format: double
+        dpFareAfterSurge:
+          type: number
+          format: double
+        batchKey:
+          type: integer
+        ERPSurchage:
+          $ref: '#/components/schemas/ERPCharges'
+        eventSurgeCharge:
+          type: array
+          items:
+            type: number
+            format: double
+        dynaDosFareCharge:
+          type: number
+          format: double
+        dosSurgeCharge:
+          type: number
+          format: double
+        additionalSurcharge:
+          type: number
+          format: double
+        totalFare:
+          type: number
+          format: double
+        estimatedFareLF:
+          type: number
+          format: double
+        estimatedFareRT:
+          type: number
+          format: double
+        pdtId:
+          type: string
+        isLiveTrafficCalculation:
+          type: boolean
+        error:
+          type: boolean
+        dpId:
+          type: string
+        quoteId:
+          type: string
+        dpRoutingDistCalcDone:
+          type: boolean
+        platformFeeVO:
+          $ref: '#/components/schemas/PlatformFeeVO'
+        meterPlatformFeeVO:
+          $ref: '#/components/schemas/PlatformFeeVO'
+        multiDestSurcharge:
+          type: number
+          format: double
+    # GetLastBookingPaymentResponse
+    GetLastBookingPaymentResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/SearchBookingPaymentsResponseItem'
+      properties:
+        paymentTariffList:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingPaymentTariff'
+    BookingPaymentTariff:
+      type: object
+      properties:
+        tariffTypeCode:
+          type: string
+          example: "PDT"
+        tariffValue:
+          type: number
+          format: BigDecimal
+          example: 20
+        units:
+          type: integer
+          example: 1
+        tariffCalculatedValue:
+          type: number
+          format: BigDecimal
+          example: 20
+        levy:
+          type: number
+          format: BigDecimal
+          example: 20
+
+
+    # ERPCharges
+    ERPCharges:
+      type: object
+      properties:
+        chargeAmt:
+          type: number
+          format: double
+        gantries:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: number
+              format: double
+    # LocSurcharge
+    LocSurcharge:
+      type: object
+      properties:
+        locSurchargeId:
+          type: integer
+        chargeType:
+          type: string
+        chargeBy:
+          type: string
+        amount:
+          type: number
+          format: double
+    # PlatformFeeVO
+    PlatformFeeVO:
+      type: object
+      properties:
+        platformFeeApplicability:
+          type: string
+        thresholdLimit:
+          type: number
+          format: double
+        feeBelowThresholdlimit:
+          type: number
+          format: double
+        feeAboveThresholdlimit:
+          type: number
+          format: double
+        platformfeeConfigId:
+          type: number
+          format: double
+        platformFee:
+          type: number
+          format: double
+    # calculate booking fee by list
+    CalculateBookingFeeByListRequest:
+      type: object
+      properties:
+        jobType:
+          type: enum
+          $ref: '#/components/schemas/JobTypeEnum'
+          remarks:
+            type: string
+            example: "IMMEDIATE"
+        isHoliday:
+          type: boolean
+          example: true
+        requestDate:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094Z"
+        bookingFeeRequestList:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingFeeRequestList'
+    #Calculate booking fee request list
+    CalculateBookingFeeByListResponse:
+      type: object
+      properties:
+        bookingFeeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalculateBookingFeeList'
+    #Booking fee request
+    CalculateBookingFeeList:
+      type: object
+      properties:
+        vehicleTypeId:
+          type: string
+          example: "1"
+        productId:
+          type: string
+          example: "FLAT-001"
+        flatFareType:
+          type: enum
+          $ref: '#/components/schemas/FlatFareTypeEnum'
+          remarks:
+            type: string
+            example: "StandardFlatFare"
+        bookingFee:
+          type: number
+          example: "8.7"
+    #booking fee request details
+    BookingFeeRequestList:
+      type: object
+      properties:
+        vehicleTypeId:
+          type: string
+          example: "1"
+        productId:
+          type: string
+          example: "FLAT-001"
+        flatFareType:
+          type: enum
+          $ref: '#/components/schemas/FlatFareTypeEnum'
+          remarks:
+            type: string
+            example: "StandardFlatFare"
+    # AddAdjustedFareAmountRequest
+    AddAdjustedFareAmountRequest:
+      type: object
+      properties:
+        jobNo:
+          type: string
+          example: 123
+        fareAdjustedAmount:
+          type: number
+          format: BigDecimal
+          example: 1.2
+        fareAdjustedType:
+          type: string
+          example: null
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

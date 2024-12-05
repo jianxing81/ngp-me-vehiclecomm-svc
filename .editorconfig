@@ -1,0 +1,42 @@
+root = true
+
+[*]
+indent_style = space
+charset = utf-8
+end_of_line = lf
+
+[*.java]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = false
+max_line_length = 120
+ij_continuation_indent_size = 4
+ij_any_else_on_new_line = true
+ij_any_catch_on_new_line = true
+ij_any_space_before_array_initializer_left_brace = true
+ij_any_spaces_within_array_initializer_braces = true
+ij_java_align_multiline_parameters = true
+ij_java_blank_lines_before_package = 0
+ij_java_blank_lines_after_package = 1
+ij_java_blank_lines_after_imports = 1
+ij_java_blank_lines_after_class_header = 0
+ij_java_blank_lines_after_anonymous_class_header = 0
+ij_java_blank_lines_before_class_end = 0
+ij_java_doc_enable_formatting = true
+ij_java_doc_do_not_wrap_if_one_line = false
+ij_java_imports_layout = *,|,javax.**,java.**,|,$*
+
+[*.xml]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{yml, yaml}]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.sh]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true

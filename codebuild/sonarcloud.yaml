@@ -1,0 +1,73 @@
+version: 0.2
+
+env:
+  variables:
+    SONAR_TOKEN: SONAR_TOKEN
+    SONAR_HOST: SONAR_HOST
+    SONAR_ORGANIZATION: SONAR_ORGANIZATION
+    SONAR_PROJECT: SONAR_PROJECT
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      java: corretto17
+    commands:
+      - ls
+      - echo ________ Logging into Dockerhub ________
+      - >
+        DOCKER_CREDENTIALS=$(aws secretsmanager get-secret-value --secret-id ngp/dockerhub --region ap-southeast-1 | 
+        jq -r '.SecretString | fromjson')
+      - export DOCKER_USERNAME=$(echo $DOCKER_CREDENTIALS | jq -r .username)
+      - export DOCKER_PASSWORD=$(echo $DOCKER_CREDENTIALS | jq -r .password)
+      - if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_PASSWORD" ]; then echo "Docker credentials not found."; exit 1; fi
+      - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+      - echo ________ Installing sonarqube ________
+      - mkdir -p /tmp/sonarqube
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.1.0.4477-linux-x64.zip -O /tmp/sonarqube/sonarqube.zip
+      - unzip /tmp/sonarqube/sonarqube.zip -d /tmp/sonarqube
+      - export PATH=$PATH:/tmp/sonarqube/sonar-scanner-4.8.0.2856-linux/bin/
+      - echo ________ Installing dependencies ________
+      - chmod +x ./gradlew
+      - ./gradlew clean build
+
+  pre_build:
+    commands:
+      - echo ________ Retrieving pull request info ________
+      - export PR_BRANCH=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | sed "s|refs/heads/||g")
+      - export PR_BASE=$(echo $CODEBUILD_WEBHOOK_BASE_REF | sed "s|refs/heads/||g")
+      - export PR_KEY=$(echo $CODEBUILD_WEBHOOK_TRIGGER | sed "s|pr/||g")
+      - echo "PR_BRANCH -- $PR_BRANCH"
+      - echo "PR_BASE -- $PR_BASE"
+      - echo "PR_KEY -- $PR_KEY"
+      - echo "CODEBUILD_WEBHOOK_EVENT -- $CODEBUILD_WEBHOOK_EVENT"
+
+  build:
+    on-failure: ABORT
+    commands:
+      - echo ________ SonarCloud ________
+      - >-
+        ./gradlew sonar
+        -x jar
+        -Dsonar.login=$SONAR_TOKEN
+        -Dsonar.host.url=$SONAR_HOST
+        -Dsonar.projectKey=$SONAR_PROJECT
+        -Dsonar.organization=$SONAR_ORGANIZATION
+        -Dsonar.pullrequest.branch=$PR_BRANCH
+        -Dsonar.pullrequest.base=$PR_BASE
+        -Dsonar.pullrequest.key=$PR_KEY
+        -Dorg.gradle.jvmargs="-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M"
+
+        ./gradlew sonar
+        -x jar
+        -Dsonar.login=$SONAR_TOKEN
+        -Dsonar.host.url=$SONAR_HOST
+        -Dsonar.projectKey=$SONAR_PROJECT
+        -Dsonar.organization=$SONAR_ORGANIZATION
+        -Dsonar.branch.name=$PR_BASE
+        -Dorg.gradle.jvmargs="-XX:MetaspaceSize=1024M -XX:MaxMetaspaceSize=1024M"
+
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
+

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/IvdResponse.schema.json",
+  "title": "IvdResponse",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ivdresponse.IvdResponse",
+  "description": "Ivd Response",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "IvdResponse"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "eventIdentifier": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ivdNo": {
+      "type": "integer"
+    },
+    "eventDate": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+
+}

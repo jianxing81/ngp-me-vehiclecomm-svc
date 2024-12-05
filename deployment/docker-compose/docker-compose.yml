@@ -1,0 +1,100 @@
+version: "3.8"
+
+services:
+  kafka-ui:
+    profiles:
+      - kafka
+      - all
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 19000:8080
+    depends_on:
+      - kafka-zookeeper0
+      - kafka0
+      - kafka-schemaregistry
+    environment:
+      KAFKA_CLUSTERS_0_NAME: cluster_0
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka0:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: kafka-zookeeper0:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9997
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schemaregistry:8085
+  kafka-zookeeper0:
+    profiles:
+      - kafka
+      - all
+    image: confluentinc/cp-zookeeper:latest
+    container_name: kafka-zookeeper0
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 19001:2181
+  kafka0:
+    profiles:
+      - kafka
+      - all
+    image: confluentinc/cp-server:7.2.1
+    hostname: kafka0
+    container_name: kafka0
+    restart: always
+    depends_on:
+      - kafka-zookeeper0
+    ports:
+      - 19002:9092
+      - 19003:9997
+      - 19004:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper0:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka0:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://kafka-schemaregistry:8085
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka0:29092
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+  kafka-schemaregistry:
+    profiles:
+      - kafka
+      - all
+    hostname: kafka-schemaregistry
+    container_name: kafka-schemaregistry
+    image: confluentinc/cp-schema-registry:7.2.1
+    restart: always
+    ports:
+      - 19005:8085
+    depends_on:
+      - kafka0
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka0:29092
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: kafka-zookeeper0:2181
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: PLAINTEXT
+      SCHEMA_REGISTRY_HOST_NAME: kafka-schemaregistry
+      SCHEMA_REGISTRY_LISTENERS: http://kafka-schemaregistry:8085
+      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
+  redis:
+    profiles:
+      - redis
+      - all
+    image: redis:7.0.7-alpine # We are using 7.0.7 for managed Redis in AWS
+    container_name: redis-ngp-me-vehiclecomm
+    environment:
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+      - REDIS_PASSWORD=admin
+    ports:
+      - '19007:6379'

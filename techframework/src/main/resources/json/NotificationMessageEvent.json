@@ -1,0 +1,201 @@
+{
+  "$id": "http://example.com/NotificationMessageEvent.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.notificationmessageevent.NotificationMessageEvent",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "channel": {
+      "items": {
+        "enum": [
+          "EMAIL",
+          "SMS",
+          "PUSH",
+          "OPENAPI",
+          "WHATSAPP"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "metadata": {
+      "properties": {
+        "attachments": {
+          "items": {
+            "properties": {
+              "filename": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "broadcastType": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string"
+        },
+        "placeHolder": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "userType": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "template": {
+      "properties": {
+        "channel": {
+          "type": "string"
+        },
+        "customerType": {
+          "type": "string"
+        },
+        "eventType": {
+          "type": "string"
+        },
+        "jobType": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string"
+        },
+        "productType": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "description": "Subcribenotification",
+  "properties": {
+    "channel": {
+      "$ref": "#/definitions/channel"
+    },
+    "content": {
+      "type": "string"
+    },
+    "eventId": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "eventType": {
+      "const": "NotificationMessageEvent"
+    },
+    "fallback": {
+      "items": {
+        "properties": {
+          "channel": {
+            "$ref": "#/definitions/channel"
+          },
+          "content": {
+            "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/definitions/metadata"
+          },
+          "pushApis": {
+            "type": "string"
+          },
+          "recipientDeviceToken": {
+            "type": "string"
+          },
+          "recipientEmail": {
+            "type": "string"
+          },
+          "recipientPhoneNumber": {
+            "type": "string"
+          },
+          "targetApp": {
+            "type": "string"
+          },
+          "template": {
+            "$ref": "#/definitions/template"
+          },
+          "type": {
+            "enum": [
+              "transactional",
+              "promotion"
+            ],
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "userType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "channel",
+          "type"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "metadata": {
+      "$ref": "#/definitions/metadata"
+    },
+    "occurredAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "pushApis": {
+      "type": "string"
+    },
+    "recipientDeviceToken": {
+      "type": "string"
+    },
+    "recipientEmail": {
+      "type": "string"
+    },
+    "recipientPhoneNumber": {
+      "type": "string"
+    },
+    "targetApp": {
+      "type": "string"
+    },
+    "template": {
+      "$ref": "#/definitions/template"
+    },
+    "type": {
+      "enum": [
+        "transactional",
+        "promotion"
+      ],
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "userType": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "channel",
+    "type"
+  ],
+  "title": "NotificationMessageEvent",
+  "type": "object"
+}

@@ -1,0 +1,2030 @@
+---
+openapi: 3.0.0
+info:
+  title: Vehicle Service
+  description: Vehicle Service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://me.zig.live
+    description: SwaggerHub API Auto Mocking
+paths:
+  ############## 1. Vehicle Management ################
+  # 1.1. [POST] Search Vehicles by specified criteria on ODRD
+  /v1.0/vehicles/search:
+    post:
+      tags:
+        - Vehicle Management
+      summary: Search vehicles by specified criterias from fleetengine.
+      description: Search vehicles by specified criterias from fleetengine.
+      operationId: searchVehicles
+      requestBody:
+        description: Search vehicles by specified criteria.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchVehiclesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchVehiclesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.2. [POST] Sync (Insert/Update) vehicle from FMS
+  /v1.0/vehicles:
+    post:
+      tags:
+        - Vehicle Management
+      summary: Sync (Insert/Update) vehicle from FMS
+      description: Sync vehicle from FMS system, create/update in ME system
+      operationId: syncInsertOrUpdateVehicleFromFms
+      requestBody:
+        required: true
+        description: JSON object of a Vehicle from FMS
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncVehicleRequest'
+      responses:
+        '204':
+          description: Sync Vehicle successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.3. [GET] List vehicles associated with a driver from Database
+  /v1.0/vehicles/associated/{driverId}:
+    get:
+      tags:
+        - Vehicle Management
+      summary: Get list of vehicles (Summary) associated with driver
+      description: Get list of vehicle (Summary) based on provided driver id
+      operationId: getVehicleSummaryByDriverId
+      parameters:
+        - in: path
+          name: driverId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 9
+          description: Driver Id
+          required: true
+      responses:
+        '200':
+          description: Successfully get List vehicle details belong to given driver Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVehicleSummaryListResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.4. [GET] Get vehicle from DATABASE
+  /v1.0/vehicles/{vehicleId}/datasources/DATABASE:
+    get:
+      tags:
+        - Vehicle Management
+      summary: Get vehicle from DATABASE
+      description: Get Vehicle from DATABASE
+      operationId: getVehicleFromDatabase
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Vehicle Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetVehicleSummary"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorResponse"
+        "404":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerErrorResponse"
+  # 1.5. [GET] Get vehicle from ODRD
+  /v1.0/vehicles/{vehicleId}/datasources/ODRD:
+    get:
+      tags:
+        - Vehicle Management
+      summary: Get vehicle from ODRD
+      description: Get Vehicle from ODRD
+      operationId: getVehicleFromOdrd
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+          required: true
+
+      responses:
+        "200":
+          description: Vehicle Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetFleetEngineVehicleResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorResponse"
+        "404":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerErrorResponse"
+  # 1.6. [DELETE] Sync (Delete) vehicle from FMS
+  /v1.0/vehicles/{vehicleId}:
+    delete:
+      tags:
+        - Vehicle Management
+      summary: Delete Vehicle (sync from FMS)
+      description: Delete Vehicle (sync from FMS)
+      operationId: deleteVehicleById
+      parameters:
+        - in: header
+          name: X-User-Id
+          description: User ID who is sending the request
+          schema:
+            type: string
+        - in: path
+          name: vehicleId
+          description: Vehicle Id
+          schema:
+            type: string
+            format: 'SBS12322'
+          required: true
+      responses:
+        '204':
+          description: Vehicle Attribute updated successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+  # 1.7. [GET] Get IVD details of vehicle
+  /v1.0/vehicles/{vehicleId}/ivds:
+    get:
+      tags:
+        - Vehicle Management
+      summary: Get IVD detail
+      description: Get IVD detail
+      operationId: getIvdDetail
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+          description: vehicleId
+          required: true
+      responses:
+        '200':
+          description: IVD Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IvdResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.8  [GET] Get all attributes of vehicle
+  # 1.9. [PUT] Update Vehicle Attributes from FMS
+  /v1.0/vehicles/{vehicleId}/attributes:
+    get:
+      tags:
+        - Vehicle Management
+      summary: Get all attributes belong to vehicle
+      description: Get all attributes belong to vehicle
+      operationId: getVehicleAttribute
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            example: "SHB1234B"
+          required: true
+          description: "Vehicle Id"
+      responses:
+        "200":
+          description: Response success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListVehicleAttributeOnDatabaseResponse"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    put:
+      tags:
+        - Vehicle Management
+      summary: Update Vehicle Attributes
+      description: Update Vehicle Attributes
+      operationId: updateVehicleAttributes
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: vehicle id
+          required: true
+      requestBody:
+        description: JSON object of a update vehicle attributes
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncVehicleAttributeRequest'
+
+      responses:
+        '204':
+          description: Vehicle Attribute updated successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.10. [PUT] Vehicle Logon
+  /v1.0/vehicles/{vehicleId}/log-on:
+    put:
+      tags:
+        - Vehicle Management
+      summary: Vehicle Logon
+      description: Vehicle Logon
+      operationId: vehicleLogOn
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: vehicle id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleLogOnRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleLogOnResponse"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.11. [PUT] Vehicle Logoff
+  /v1.0/vehicles/{vehicleId}/log-off:
+    put:
+      tags:
+        - Vehicle Management
+      summary: Vehicle Logoff
+      description: Vehicle Logoff
+      operationId: vehicleLogOff
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: vehicle id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleLogOffRequest'
+        required: true
+      responses:
+        '204':
+          description: Vehicle Attribute updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleLogOffResponse'
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.12. [PUT] Update Vehicle State
+  /v1.0/vehicles/{vehicleId}/events/{event}:
+    put:
+      tags:
+        - Vehicle Management
+      summary: Update vehicle state
+      description: Update vehicle state in database and ODRD
+      operationId: updateVehicleState
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: event
+          schema:
+            type: string
+            enum:
+              - ARRIVE_PICKUP
+              - ARRIVE_INTERMEDIATE
+              - START_TRIP
+              - END_TRIP
+              - FREE
+              - READY
+              - BUSY
+              - ONCALL
+              - POB
+              - STC
+              - NO_SHOW
+              - OFFLINE
+              - DISABLE_AUTO_BID
+              - ENABLE_AUTO_BID
+              - ENABLE_AUTO_ACCEPT
+              - EMERGENCY_REPORT
+              - EMERGENCY_FALSE_ALARM
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVehicleStateRequest"
+        required: true
+      responses:
+        "204":
+          description: Successful response
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorResponse"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerErrorResponse"
+  # 1.13  [POST] Report Vehicle Total Mileage
+  /v1.0/vehicles/{vehicleId}/report-total-mileage:
+    post:
+      tags:
+        - Vehicle Management
+      summary: Report Vehicle Total Mileage
+      description: Report Vehicle Total Mileage
+      operationId: reportVehicleTotalMileage
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: vehicle id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                totalMileage:
+                  type: number
+                  format: double
+                  example: 10000
+        required: true
+      responses:
+        '204':
+          description: Vehicle Mileage updated successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 1.14  [POST] Update Vehicle Location to ODRD
+  /v1.0/vehicles/{vehicleId}/locations:
+    post:
+      tags:
+        - Vehicle Management
+      summary: Update location of vehicle to ODRD
+      description: Update location of vehicle to ODRD
+      operationId: updateVehicleLocation
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVehicleLocationRequest"
+
+      responses:
+        "204":
+          description: Vehicle Mileage updated successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorResponse"
+        "404":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerErrorResponse"
+  # 1.15  [POST] Update information for MDT
+  /v1.0/vehicles/{vehicleId}/mdt-update:
+    post:
+      tags:
+        - Vehicle Management
+      summary: Update information for MDT
+      description: Update information for MDT
+      operationId: updateMdtInformation
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMdtInformationRequest"
+
+      responses:
+        "204":
+          description: MDT Information updated successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestErrorResponse"
+        "404":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerErrorResponse"
+  # 1.16  [POST]  Map-centric Vehicle Search specifically from RCSA
+  /v1.0/vehicles/map/search:
+    post:
+      tags:
+        - Vehicle Management
+      summary: Map-centric Vehicle Search specifically from RCSA
+      description: Map-centric Vehicle Search specifically from RCSA
+      operationId: mapCentricVehicleSearch
+      requestBody:
+        description: Search vehicles by specified criteria.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MapCentricSearchVehiclesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVehicleSummaryListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  ############# 2. Driver Vehicle Association Management ################
+  # 2.1. [POST] Associate driver and vehicle from FMS
+  /v1.0/vehicles/{vehicleId}/drivers/{accessId}/associates:
+    post:
+      tags:
+        - Driver Vehicle Association Management
+      summary: Sync the associated driver and vehicle for Vehicle Service
+      description: Sync the associated driver and vehicle for Vehicle Service
+      operationId: syncDriverVehicleAssociationFromFms
+      parameters:
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: vehicle Id
+          required: true
+        - in: path
+          name: accessId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: access Id
+          required: true
+      requestBody:
+        description: JSON object of a driver-vehicle Association
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverVehicleAssociationSyncRequest'
+      responses:
+        '204':
+          description: Sync Association Successful
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful"
+        '400':
+          description: Invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Vehicle does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 2.2. [POST] Disassociate driver and vehicle from FMS
+  /v1.0/vehicles/{vehicleId}/drivers/{accessId}/disassociates:
+    post:
+      tags:
+        - Driver Vehicle Association Management
+      summary: Sync Dissociation driver vehicle from FMS
+      description: Sync Dissociation of Driver & Vehicle from FMS to ME Database.
+      operationId: syncDissociationDriverVehicleFromFms
+      parameters:
+        - in: path
+          name: accessId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: Access Id
+          required: true
+        - in: path
+          name: vehicleId
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+          description: Vehicle Id
+          required: true
+      requestBody:
+        required: true
+        description: JSON object of a Vehicle from FMS
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncDissociateRequest'
+      responses:
+        '204':
+          description: Sync Dissociation Successful
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Successful"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+
+  ############# 3. Vehicle Master Attribute Management ################
+  # 3.1. [POST] Sync (Insert/Update) vehicle master Attribute from FMS
+  # 3.2. [GET] Get Vehicle Master Attribute
+  /v1.0/vehicles/master-attributes:
+    post:
+      tags:
+        - Vehicle Master Attribute Controller
+      summary: Sync (Insert/Update) vehicle master attribute from FMS
+      description: Sync vehicle master attribute from FMS system, create/update in ME system
+      operationId: syncInsertOrUpdateVehicleMasterAttributeFromFms
+      requestBody:
+        required: true
+        description: JSON object of a Vehicle from FMS
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncVehicleAttributeMasterRequest'
+      responses:
+        '204':
+          description: Sync Vehicle successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    get:
+      tags:
+        - Vehicle Master Attribute Controller
+      summary: Get vehicle master attributes
+      operationId: getVehicleMasterAttribute
+
+      responses:
+        "200":
+          description: Response success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListVehicleAttributeOnDatabaseResponse"
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  # 3.3. [DELETE] Delete vehicle master attributes
+  /v1.0/vehicles/master-attributes/{attributeCode}:
+    delete:
+      tags:
+        - Vehicle Master Attribute Controller
+      summary: Delete vehicle master attributes
+      description: Delete vehicle master attributes
+      operationId: deleteVehicleMasterAttributes
+      parameters:
+        - in: path
+          name: attributeCode
+          schema:
+            type: string
+          description: Attribute code
+          required: true
+
+      responses:
+        '204':
+          description: Delete successful
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SUCCESSFUL"
+        '400':
+          description: BadRequest / Request Param cannot be null or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+  ############# 4. Vehicle Master Group Attribute ################
+  # 4.1. [GET] Get Vehicle Master Group Attribute
+  /v1.0/vehicles/master-group-attributes:
+    get:
+      tags:
+        - Vehicle Master Group Attribute
+      summary: Get vehicle master group attributes
+      operationId: getVehicleMasterGroupAttribute
+
+      responses:
+        "200":
+          description: Response success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListVehicleGroupAttributeResponse"
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+components:
+  schemas:
+    ########### 1. Request and Response used in Vehicle Management APIs ##########
+    # 1.1.1. SearchVehiclesRequest - [POST] Search Vehicles by specified criteria on ODRD
+    SearchVehiclesRequest:
+      required:
+        - pickupRadiusMeters
+        - pickupPoint
+        - tripTypes
+        - vehicleTypes
+        - orderBy
+        - minCapacity
+        - count
+        - tripId
+      type: object
+      properties:
+        pickupRadiusMeters:
+          type: integer
+          example: 400
+          minimum: 400
+          maximum: 10000
+          description: Defines the vehicle search radius around the pickup point. Only vehicles within the search radius will be returned. Value must be between 400 and 10000 meters (inclusive).
+        pickupPoint:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/TerminalLocation"
+        dropoffPoint:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/TerminalLocation"
+        tripTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TripType"
+          description: Note that EXCLUSIVE is the only supported value within context of NGP
+        vehicleTypes:
+          type: array
+          items:
+            "$ref": "#/components/schemas/VehicleType"
+          description: Note that UNKNOWN is the only supported value within context of NGP. We are currently managing the various types seperately within the attributes field.
+        orderBy:
+          allOf:
+            - $ref: "#/components/schemas/VehicleMatchOrder"
+          description: Specifies the desired ordering criterion for results.
+        minCapacity:
+          type: integer
+          default: 4
+          minimum: 1
+          description: Specifies the number of passengers being considered for a trip. The value must be greater than or equal to one. The driver is not considered in the capacity value.
+        count:
+          type: integer
+          default: 20
+          minimum: 1
+          maximum: 20
+          description: Specifies the maximum number of vehicles to return. The value must be between 1 and 50 (inclusive).
+        includeBackToBack:
+          type: boolean
+          default: true
+          description: Indicates if a vehicle with a single active trip is eligible for another match. If false, vehicles with assigned trips are excluded from the search results. If true, search results include vehicles with TripStatus of ENROUTE_TO_DROPOFF.
+        tripId:
+          type: string
+          example: "tstapos_01"
+          description: Indicates the trip associated with this request.
+        requiredAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleAttribute'
+          description: Restricts search to only those vehicles with the specified attributes. This field is a conjection/AND operation. A max of 50 requiredAttributes is allowed.
+        requiredOneOfAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleAttributeList'
+          description: Restricts the search to only vehicles with at least one of the specified attributes in each VehicleAttributeList.
+        requiredOneOfAttributeSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleAttributeList'
+          description: Restricts the search to only vehicles with all the atrributes in a VehicleAttributeList.
+    # 1.1.2. SearchVehiclesResponse - used in [POST] Search Vehicles by specified criteria on ODRD
+    SearchVehiclesResponse:
+      type: object
+      required:
+        - data
+        - timestamp
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleMatch'
+        timestamp:
+          type: string
+          example: '2023-06-01T01:30+08:00'
+    # 1.2.1. SyncVehicleRequest - [POST] Sync (Insert/Update) vehicle from FMS
+    SyncVehicleRequest:
+      required:
+        - vehicleId
+        - color
+        - make
+        - model
+        - year
+        - registerDt
+        - seatingCapacity
+        - entity
+        - fleetPartner
+        - deregisterDt
+        - paymentTerminal
+        - advertisement
+        - incabTv
+        - plate
+      type: object
+      properties:
+        vehicleId:
+          type: string
+          maxLength: 10
+          example: "SHB3189B"
+          description: The unique name for the vehicle from FMS.
+        color:
+          type: string
+          example: "WHITE"
+          maxLength: 12
+          description: The color of the vehicle.
+        make:
+          type: string
+          example: "NIS"
+          maxLength: 12
+          description: The make (company or brand) of the vehicle.
+        model:
+          type: string
+          example: "CROWN(LXS12)"
+          maxLength: 20
+          description: The model of the vehicle.
+        year:
+          type: integer
+          example: 2012
+          description: The year that the vehicle is manufactured.
+        registerDt:
+          type: string
+          format: date-time
+          example: 2023-05-17T06:47:53.094554Z
+          description: The time that the vehicle is registered to ComfortDelgro.
+        seatingCapacity:
+          type: integer
+          example: 4
+          description: The maximum capacity of the vehicle.
+        entity:
+          type: string
+          example: "CCPL"
+        fleetPartner:
+          type: string
+          example: "OWNR"
+        deregisterDt:
+          type: string
+          format: date-time
+          example: 2023-05-17T06:47:53.094554Z
+          description: The time that the vehicle is deregistered.
+        paymentTerminal:
+          type: string
+          example: "CD"
+        advertisement:
+          type: string
+          example: "BD"
+        incabTv:
+          type: string
+          example: "UZ"
+        plate:
+          type: string
+          example: "SHB-3189"
+    # 1.3.1. GetVehicleSummaryListResponse - used in [GET] Get vehicle from DATABASE
+    GetVehicleSummaryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetVehicleSummary'
+    # 1.3.2. GetVehicleSummary - used in [GET] Get vehicle from DATABASE
+    # 1.4.1  GetVehicleSummary - used in [GET] Get vehicle from DATABASE
+    GetVehicleSummary:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+          example: "SHB3189P"
+        color:
+          type: string
+          example: "White"
+        make:
+          type: string
+          example: "NIS"
+        model:
+          type: string
+          example: "CROWN (LXS12)"
+        companyId:
+          type: string
+          example: "1"
+        vehicleTypeId:
+          type: integer
+          example: 1
+        plate:
+          type: string
+          example: "SHB-3189P"
+        companyIvdModelId:
+          type: string
+          example: "X-One"
+        companyName:
+          type: string
+          example: "Comfort Partner"
+        isPhcCompany:
+          type: boolean
+          example: true
+        fmsFleetPartner:
+          type: string
+          example: "OTHERS"
+        enablePremierFeatures:
+          type: number
+          example: 1
+        vehicleTypeName:
+          type: string
+          example: "Private Car 4 seaters"
+        mdtStatus:
+          type: string
+          example: "READY"
+        driverId:
+          type: string
+          example: "0000001"
+        appDriverStatus:
+          type: string
+          example: "READY"
+        testFlag:
+          type: boolean
+          example: true
+        vehicleGroupIds:
+          type: array
+          items:
+            type: string
+          example: [ "11", "12" ]
+        vehicleDesc:
+          type: string
+          example: vehicleDesc
+    # 1.5.1. GetFleetEngineVehicleResponse - used in [GET] Get vehicle from ODRD
+    GetFleetEngineVehicleResponse:
+      type: object
+      required:
+        - data
+        - timestamp
+      properties:
+        data:
+          $ref: '#/components/schemas/FleetEngineVehicle'
+        timestamp:
+          type: string
+          example: '2023-06-01T01:30+08:00'
+    # 1.7.1. IvdResponse - used in [GET] Get IVD details of vehicle
+    IvdResponse:
+      type: object
+      properties:
+        ivdNo:
+          type: string
+          example: 50108
+        ipAddress:
+          type: string
+          example: 10.61.8.131
+        imsi:
+          type: string
+          example: 525016180962094
+    # 1.8.1 ListVehicleAttributeOnDatabaseResponse - used in [GET] Get all attributes belong to vehicle
+    ListVehicleAttributeOnDatabaseResponse:
+      type: array
+      items:
+        "$ref": "#/components/schemas/VehicleAttributeOnDatabase"
+    # 1.8.2 VehicleAttributeOnDatabase - used in [GET] Get all attributes belong to vehicle
+    VehicleAttributeOnDatabase:
+      type: object
+      properties:
+        bitPosition:
+          type: integer
+          example: 14
+        attribute:
+          type: string
+          example: "Gold Service Taxi"
+        rooftopMsg:
+          type: string
+          example: "Gold Service"
+    # 1.9.1 SyncVehicleAttributeRequest - [PUT] Update Vehicle Attributes from FMS
+    SyncVehicleAttributeRequest:
+      type: object
+      properties:
+        attributeCode:
+          type: string
+          example: "SGJB"
+        isActive:
+          type: boolean
+          example: true
+    # 1.10.1. VehicleLogOnRequest - [PUT] Vehicle Logon
+    VehicleLogOnRequest:
+      type: object
+      properties:
+        driverId:
+          type: string
+          example: "0225952"
+          minLength: 1
+          maxLength: 10
+        deviceType:
+          type: string
+          enum:
+            - MDT
+            - ANDROID
+            - IPHONE
+        vehicleStatus:
+          type: string
+          enum:
+            - READY
+            - FREE
+            - BUSY
+            - BREAK
+            - STC
+            - ONCALL
+            - POB
+            - ARRIVED
+            - NOSHOW
+            - PAYMENT
+            - FORWARD
+            - POWEROFF
+            - OFFLINE
+            - INRANK
+        driverAttributeList:
+          type: array
+          items:
+            type: string
+          description: "Driver attribute list. Compatible with NGP"
+          example: [ "FERRYING OF DOGS & OTHER PETS", "THE FISHERMAN CLUB GROUP", "Speaks English" ]
+        driverPdtSubscriptionList:
+          type: array
+          items:
+            type: string
+          description: "Driver product subscription list. Compatible with NGP"
+          example: [ "ComfortRIDE", "STANDARD" ]
+        driverAttributes:
+          type: string
+          description: "Driver attribute hex string. Compatible with CN3"
+          example: "a1b3f8e2c946d7a5f0e87c9b2d4fe6c1"
+        driverPdtAttributes:
+          type: string
+          description: "Driver Pdt attribute hex string. Compatible with CN3"
+          example: "a1b3f8e2c946d7a5f0e87c9b2d4fe6c1"
+        preferredJobType:
+          type: string
+          description: "Driver preferred job type"
+          enum:
+            - ALL
+            - IMMEDIATE
+            - ADVANCE
+            - NONE
+        latitude:
+          type: number
+          format: double
+          example: 1.290270
+        longitude:
+          type: number
+          format: double
+          example: 103.851959
+        eventTime:
+          type: string
+          format: date-time
+          example: "2023-11-01T17:32:28Z"
+        ivdNo:
+          type: string
+          maxLength: 10
+          example: "123"
+        mileage:
+          type: number
+          format: double
+          example: 100
+      required:
+        - driverId
+        - deviceType
+        - vehicleStatus
+        - eventTime
+    # 1.10.2. VehicleLogOnResponse - used in [PUT] Vehicle Logon
+    VehicleLogOnResponse:
+      type: object
+      properties:
+        mdtDriverOnTrip:
+          type: boolean
+          example: true
+        isAutoBid:
+          type: boolean
+          example: true
+        isAutoAccept:
+          type: boolean
+          example: true
+        activeStatus:
+          type: string
+          description: |
+            Indicates the active status of the vehicle. The following values are supported:
+            - "0" : AutoBid Disabled
+            - "1" : Allow Only AutoBid
+            - "2" : Allow AutoBid and AutoAccept
+          enum: [ "0", "1", "2" ]
+          example: "0"
+    # 1.11.1 VehicleLogOffRequest - [PUT] Vehicle Logoff
+    VehicleLogOffRequest:
+      type: object
+      properties:
+        driverId:
+          type: string
+        deviceType:
+          type: string
+          enum:
+            - MDT
+            - Android
+            - Iphone
+        mileage:
+          type: number
+          format: double
+          example: 10000
+        latitude:
+          type: number
+          format: double
+          example: 1.290270
+        longitude:
+          type: number
+          format: double
+          example: 103.851959
+        eventTime:
+          type: string
+          format: date-time
+          example: "2023-11-01T17:32:28Z"
+      required:
+        - driverId
+        - deviceType
+        - latitude
+        - longitude
+        - eventTime
+    # 1.11.2 VehicleLogOffResponse
+    VehicleLogOffResponse:
+      type: object
+      properties:
+        mileageClocked:
+          type: number
+          description: mileage clocked during shift
+          example: 112
+    # 1.12.1 UpdateVehicleStateRequest - [PUT] Update Vehicle State
+    UpdateVehicleStateRequest:
+      type: object
+      required:
+        - deviceType
+        - eventTime
+        - latitude
+        - longitude
+        - speed
+        - heading
+      properties:
+        jobNo:
+          type: string
+        driverId:
+          type: string
+        deviceType:
+          type: string
+          enum:
+            - Android
+            - Iphone
+            - MDT
+        eventTime:
+          type: string
+          format: date-time
+          example: "2023-11-01T17:32:28"
+        gpsAccuracy:
+          type: number
+          format: double
+          example: 0.1
+        latitude:
+          type: number
+          format: double
+          example: 1.290270
+        longitude:
+          type: number
+          format: double
+          example: 1.290270
+        speed:
+          type: number
+          format: double
+          description: speed of the moving vehicle
+          example: 0.1
+        heading:
+          type: integer
+          description: direction of the moving vehicle
+          example: 1
+        noShowEventType:
+          type: integer
+          description: no show event type
+          example: 1
+    # 1.14.1 UpdateVehicleLocationRequest - [POST] Update Vehicle Location to ODRD
+    UpdateVehicleLocationRequest:
+      type: object
+      required:
+        - heading
+        - speed
+        - latitude
+        - longitude
+        - updateTime
+      properties:
+        heading:
+          type: integer
+          description: direction of the moving vehicle
+          example: 1
+        speed:
+          type: number
+          format: double
+          description: speed of the moving vehicle
+          example: 0.1
+        latitude:
+          type: number
+          format: double
+          example: 21.0080522
+        longitude:
+          type: number
+          format: double
+          example: 22.0080522
+        updateTime:
+          type: string
+          format: date-time
+          example: "2023-11-01T17:32:28"
+    # 1.15.1 UpdateMDTRequest - [POST] Update information for MDT
+    UpdateMdtInformationRequest:
+      type: object
+      properties:
+        eventType:
+          type: string
+          enum:
+            - CROSSING_ZONE
+            - CHANGE_SHIFT_UPDATE
+            - DESTINATION_UPDATE
+        zoneDate:
+          type: string
+          format: date-time
+          description: "Used when eventType=CROSSING_ZONE"
+          example: "2023-11-01"
+        shiftDestination:
+          type: string
+          description: "Used when eventType=CHANGE_SHIFT_UPDATE"
+          example: "81"
+        destinationCode:
+          type: string
+          description: "Used when eventType=DESTINATION_UPDATE"
+          example: "81"
+      required:
+        - eventType
+    # 1.16.1 MapCentricSearchVehiclesRequest - [POST] Map-centric Vehicle Search specifically from RCSA
+    MapCentricSearchVehiclesRequest:
+      type: object
+      required:
+        - zoneId
+        - status
+        - vehicleType
+        - companyId
+      properties:
+        zoneId:
+          type: string
+          example: "zoneId"
+          description: The zone id of the vehicle
+        status:
+          type: string
+          example: "status"
+          description: The status of the vehicle
+        vehicleType:
+          type: string
+          example: "vehicleType"
+          description: The type of the vehicle
+        companyId:
+          type: string
+          example: "companyId"
+          description: The company id of the vehicle
+
+
+    ############## 2. Request and Response used in Driver Vehicle Association Management APIs ##############
+    # 2.1.1. DriverVehicleAssociationSyncRequest - [POST] Associate driver and vehicle from FMS
+    DriverVehicleAssociationSyncRequest:
+      required:
+        - drvNric
+      type: object
+      properties:
+        drvNric:
+          type: string
+          minLength: 1
+          maxLength: 11
+          example: "0087333"
+        driverType:
+          type: string
+          minLength: 1
+          maxLength: 2
+          example: "HR"
+    # 2.2.1. SyncDissociateRequest - [POST] Disassociate driver and vehicle from FMS
+    SyncDissociateRequest:
+      type: object
+      required:
+        - drvNric
+      properties:
+        drvNric:
+          type: string
+          minLength: 1
+          maxLength: 11
+          example: S0087333F
+
+
+    ############## 3. Request and Response used in Vehicle Master Attribute Management APIs ##############
+    # 3.1.1. SyncVehicleAttributeMasterRequest - [POST] Sync (Insert/Update) vehicle master Attribute from FMS
+    SyncVehicleAttributeMasterRequest:
+      type: object
+      properties:
+        attributeCode:
+          type: string
+          example: "SGJB"
+        description:
+          type: string
+          example: "vehicle attribute description"
+        roofTopMsg:
+          type: string
+          example: "For Hire"
+
+    ############### 4. Request and Response used in Vehicle Master Group Attribute Management APIs ############
+    # 4.1.1 ListVehicleGroupAttributeResponse - used in [GET] Get Vehicle Master Group Attribute
+    ListVehicleGroupAttributeResponse:
+      type: array
+      items:
+        "$ref": "#/components/schemas/VehicleGroupAttribute"
+    # 4.1.2 VehicleGroupAttribute - used in [GET] Get Vehicle Master Group Attribute
+    VehicleGroupAttribute:
+      type: object
+      properties:
+        bitPosition:
+          type: integer
+          example: 14
+        attribute:
+          type: string
+          example: "Limo Cab"
+
+
+    ######### Error Responses ############
+    # BadRequestErrorResponse
+    BadRequestErrorResponse:
+      required:
+        - error
+        - traceId
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        path:
+          type: string
+          example: </sample-api-path>
+        error:
+          $ref: '#/components/schemas/BadRequestError'
+        timestamp:
+          type: string
+          format: date-time
+          example: 1699854301237
+    # BadRequestError
+    BadRequestError:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: "badRequest"
+        message:
+          type: string
+          example: "Multiple errors in user register request"
+        data:
+          $ref: '#/components/schemas/BadRequestErrorData'
+    # BadRequestErrorData
+    BadRequestErrorData:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BadRequestErrorField'
+    # BadRequestErrorField
+    BadRequestErrorField:
+      required:
+        - name
+        - message
+      properties:
+        name:
+          type: string
+          example: "type"
+        message:
+          type: array
+          items:
+            type: string
+            example: "invalid bound"
+    # NotFoundErrorResponse
+    NotFoundErrorResponse:
+      required:
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: 1234567498
+        path:
+          type: string
+          example: /request/to/path
+        error:
+          $ref: '#/components/schemas/NotFoundError'
+        timestamp:
+          type: string
+          format: date-time
+          example: 1699854242466
+    # NotFoundError
+    NotFoundError:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: string
+          example: Not found exception
+        message:
+          type: string
+          example: Can not find any data
+    # InternalServerErrorResponse
+    InternalServerErrorResponse:
+      required:
+        - error
+        - traceId
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        path:
+          type: string
+          example: </sample-api-path>
+        error:
+          $ref: '#/components/schemas/InternalError'
+        timestamp:
+          type: string
+          format: date-time
+          example: 1699854242466
+    # InternalError
+    InternalError:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: string
+          example: 500
+        message:
+          type: string
+          example: Sample 500 error
+
+
+    ####### Model Objects ##########
+    # FleetEngineVehicle
+    FleetEngineVehicle:
+      type: object
+      required:
+        - vehicleState
+        - supportedTripTypes
+        - maximumCapacity
+        - vehicleTypes
+      properties:
+        vehicleId:
+          type: string
+          example: providers/providerId/vehicles/AMS01
+        name:
+          type: string
+          example: AMS01
+          description: Output only. The unique name for this vehicle. The format is providers/{provider}/vehicles/{vehicle}.
+        vehicleState:
+          "$ref": "#/components/schemas/VehicleState"
+        supportedTripTypes:
+          type: array
+          items:
+            "$ref": "#/components/schemas/TripType"
+          description: until now using only value EXCLUSIVE to match the requirement
+        maximumCapacity:
+          type: integer
+          example: 0
+        vehicleType:
+          "$ref": "#/components/schemas/VehicleType"
+        currentTrips:
+          type: array
+          items:
+            type: string
+        lastLocation:
+          "$ref": '#/components/schemas/VehicleLocation'
+        attributes:
+          type: array
+          items:
+            "$ref": '#/components/schemas/VehicleAttribute'
+        licensePlate:
+          "$ref": '#/components/schemas/LicensePlate'
+        route:
+          type: array
+          items:
+            "$ref": '#/components/schemas/TerminalLocation'
+        currentRouteSegment:
+          type: string
+        currentRouteSegmentTraffic:
+          "$ref": '#/components/schemas/TrafficPolylineData'
+        currentRouteSegmentVersion:
+          type: string
+          format: date-time
+        currentRouteSegmentEndPoint:
+          "$ref": '#/components/schemas/TripWaypoint'
+        remainingDistanceMeters:
+          type: integer
+        etaToFirstWaypoint:
+          type: string
+          format: date-time
+        remainingTimeSeconds:
+          type: integer
+        waypoints:
+          type: array
+          items:
+            "$ref": '#/components/schemas/TripWaypoint'
+        waypointsVersion:
+          type: string
+          format: date-time
+        backToBackEnabled:
+          type: boolean
+        navigationStatus:
+          "$ref": "#/components/schemas/NavigationStatus"
+    # VehicleMatch
+    VehicleMatch:
+      required:
+        - vehicle
+        - vehiclePickupStraightLineDistanceMeters
+        - tripType
+      properties:
+        vehicle:
+          $ref: '#/components/schemas/FleetEngineVehicle'
+        vehiclePickupEta:
+          type: string
+          format: date-time
+          description: Estimated time of arrival for the vehicle to reach the pickup point. An empty value indicates a failure in calculating ETA for the vehicle.
+          example: "2014-10-02T15:01:23Z"
+        vehiclePickupDistanceMeters:
+          type: integer
+          description: The distance from the Vehicle's current location to the pickup point, in meters. This distance comprises the calculated driving (route) distance.
+          example: 1500
+        vehiclePickupStraightLineDistanceMeters:
+          type: integer
+          description: The straight-line distance between the vehicle and the pickup point.
+          example: 400
+        vehicleDropoffEta:
+          type: string
+          format: date-time
+          description: Estimated time of arrival for the vehicle to reach the dropoff point. An empty value indicates a failure in calculating ETA for the vehicle.
+          example: "2014-10-02T15:01:23Z"
+        vehiclePickupToDropoffDistanceMeters:
+          type: integer
+          description: The distance from the Vehicle's current location to the dropoff point, in meters. This distance comprises the calculated driving (route) distance.
+          example: 4100
+        tripType:
+          $ref: "#/components/schemas/TripType"
+        vehicleTripsWaypoints:
+          type: array
+          items:
+            "$ref": '#/components/schemas/Waypoint'
+        vehicleMatchType:
+          $ref: "#/components/schemas/VehicleMatchType"
+        requestedOrderedBy:
+          allOf:
+            - $ref: "#/components/schemas/VehicleMatchOrder"
+          description: The ordering criterion requested by the client.
+        orderedBy:
+          allOf:
+            - $ref: "#/components/schemas/VehicleMatchOrder"
+          description: The ordering criterion used by the server. Normally, this will match requestedOrderedBy, but the server may override the client's request.
+    # VehicleType
+    VehicleType:
+      $ref: '#/components/schemas/VehicleCategory'
+    # VehicleCategory
+    VehicleCategory:
+      type: string
+      enum:
+        - AUTO
+        - TAXI
+        - TRUCK
+        - TWO_WHEELER
+        - UNKNOWN
+        - UNRECOGNIZED
+    # NavigationStatus
+    NavigationStatus:
+      type: string
+      enum:
+        - NO_GUIDANCE
+        - ENROUTE_TO_DESTINATION
+        - OFF_ROUTE
+        - ARRIVED_AT_DESTINATION
+        - UNKNOWN_NAVIGATION_STATUS
+        - UNRECOGNIZED
+    # TripWaypoint
+    TripWaypoint:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/TerminalLocation'
+        tripId:
+          type: string
+        waypointType:
+          $ref: '#/components/schemas/WaypointType'
+        pathToWaypoint:
+          type: array
+          items:
+            $ref: '#/components/schemas/LatLng'
+        encodedPathToWaypoint:
+          type: string
+        trafficToWaypoint:
+          $ref: '#/components/schemas/ConsumableTrafficPolyline'
+        distanceMeters:
+          type: integer
+        eta:
+          type: string
+        duration:
+          type: string
+    # WaypointType
+    WaypointType:
+      type: string
+      enum:
+        - PICKUP_WAYPOINT_TYPE
+        - DROP_OFF_WAYPOINT_TYPE
+        - INTERMEDIATE_DESTINATION_WAYPOINT_TYPE
+        - UNKNOWN_WAYPOINT_TYPE
+        - UNRECOGNIZED
+    # ConsumableTrafficPolyline
+    ConsumableTrafficPolyline:
+      type: object
+      properties:
+        speedReadingInterval:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeedReadingInterval'
+        encodedPathToWaypoint:
+          type: string
+    # SpeedReadingInterval
+    SpeedReadingInterval:
+      type: object
+      properties:
+        startPolylinePointIndex:
+          type: number
+          format: double
+        endPolylinePointIndex:
+          type: number
+          format: double
+        speed:
+          type: string
+    # TrafficPolylineData
+    TrafficPolylineData:
+      type: object
+      properties:
+        trafficRendering:
+          $ref: '#/components/schemas/VisualTrafficReportPolylineRendering'
+    # VisualTrafficReportPolylineRendering
+    VisualTrafficReportPolylineRendering:
+      type: object
+      properties:
+        roadStretch:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoadStretch'
+    # RoadStretch
+    RoadStretch:
+      type: object
+      properties:
+        style:
+          $ref: '#/components/schemas/Style'
+        offsetMeters:
+          type: integer
+        lengthMeters:
+          type: integer
+    # Style
+    Style:
+      type: string
+      enum:
+        - SLOWER_TRAFFIC
+        - TRAFFIC_JAM
+        - STYLE_UNSPECIFIED
+        - UNRECOGNIZED
+    # VehicleLocation
+    VehicleLocation:
+      type: object
+      properties:
+        location:
+          "$ref": '#/components/schemas/LatLng'
+        heading:
+          type: number
+          format: double
+        speed:
+          type: number
+          format: double
+        updateTime:
+            type: string
+            format: date-time
+    # LicensePlate
+    LicensePlate:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        lastCharacter:
+          type: string
+    # VehicleState
+    VehicleState:
+      type: string
+      enum:
+        - UNKNOWN_VEHICLE_STATE
+        - OFFLINE
+        - ONLINE
+        - UNRECOGNIZED
+    # TerminalLocation
+    TerminalLocation:
+      type: object
+      required:
+        - point
+      properties:
+        point:
+          "$ref": '#/components/schemas/LatLng'
+    # LatLng
+    LatLng:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          example: 21.0080522
+        longitude:
+          type: number
+          format: double
+          example: 105.5353634
+    # Waypoint
+    Waypoint:
+      type: object
+      properties:
+        latLng:
+          $ref: '#/components/schemas/LatLng'
+        eta:
+          type: string
+    # TripType
+    TripType:
+      type: string
+      enum:
+        - SHARED
+        - EXCLUSIVE
+        - UNKNOWN_TRIP_TYPE
+        - UNRECOGNIZED
+    # VehicleMatchType
+    VehicleMatchType:
+      type: string
+      enum:
+        - UNKNOWN
+        - EXCLUSIVE
+        - BACK_TO_BACK
+        - CARPOOL
+        - CARPOOL_BACK_TO_BACK
+        - UNRECOGNIZED
+    # VehicleMatchOrder
+    VehicleMatchOrder:
+      type: string
+      enum:
+        - UNKNOWN_VEHICLE_MATCH_ORDER
+        - PICKUP_POINT_ETA
+        - PICKUP_POINT_DISTANCE
+        - DROPOFF_POINT_ETA
+        - PICKUP_POINT_STRAIGHT_DISTANCE
+        - COST
+        - UNRECOGNIZED
+    # VehicleAttribute
+    VehicleAttribute:
+      type: object
+      properties:
+        key:
+          type: string
+          example: isSuspendStatus
+        value:
+          type: string
+          example: true
+    # VehicleAttributeList
+    VehicleAttributeList:
+      type: array
+      items:
+        "$ref": '#/components/schemas/VehicleAttribute'
+
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+
+

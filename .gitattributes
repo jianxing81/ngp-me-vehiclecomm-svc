@@ -1,0 +1,10 @@
+# Set default behavior to automatically normalize line endings to LF
+* text eol=lf
+# Ignore image files (do not convert line endings)
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.bmp binary
+*.tiff binary
+*.ico binary

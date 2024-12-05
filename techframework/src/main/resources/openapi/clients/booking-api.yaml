@@ -1,0 +1,175 @@
+---
+openapi: 3.0.0
+info:
+  title: Booking Service
+  description: Booking Service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://me.zig.live
+    description: SwaggerHub API Auto Mocking
+paths:
+  /v1.0/booking/product:
+    get:
+      summary: Get  all booking products
+      operationId: getBookingProducts
+      tags:
+        - Booking Controller
+      responses:
+        '200':
+          description: Successfully get all list of booking Products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingProductsResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+components:
+  schemas:
+    BookingProductsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingProducts"
+    BookingProducts:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: STD001
+        productDescription:
+          type: string
+          example: COMFORT
+        productCompany:
+          type: string
+          example: CCPL
+        validStartDate:
+          type: string
+          format: date-time
+          example: 2023-10-05T11:30:30Z
+        validEndDate:
+          type: string
+          format: date-time
+          example: 2023-10-05T11:30:30Z
+        productOwner:
+          type: string
+          example: PREMIER
+        isFlat:
+          type: boolean
+          example: true
+        inVehicleDeviceCode:
+          type: number
+          example: 555555
+        dispatchMode:
+          type: string
+          example: IMMEDIATE
+        isCancelFailedAllowed:
+          type: boolean
+          example: true
+        productDefaultVehicleType:
+          type: number
+          example: 7
+        defaultMeritTier:
+          type: string
+          example: Default Merit Tier
+        isGstApplicable:
+          type: boolean
+          example: true
+        isAdminChargeApplicable:
+          type: boolean
+          example: true
+        numOfHours:
+          type: number
+          example: 2
+        isGstInclusive:
+          type: boolean
+          example: true
+        isAdminInclusive:
+          type: boolean
+          example: true
+        gstApplyOn:
+          type: string
+          example: TOTAL
+        adminApplicablePaymentMode:
+          type: string
+          example: CREDIT
+        totalFareHidePaymentMode:
+          type: string
+          example: Cash
+        adminFeeHidePaymentMode:
+          type: string
+          example: Cash
+        isGstAbsorbed:
+          type: boolean
+          example: true
+        ivdDisplayLabel:
+          type: string
+          example: Ivd Display Label
+        ivdReceiptLabel:
+          type: string
+          example: Ivd Receipt Label
+        deltaEta:
+          type: number
+          example: 2
+        noshowTiming:
+          type: number
+          example: 1
+        appProductDescription:
+          type: string
+          example: ComfortRIDE
+        appProductDisclaimer:
+          type: string
+          example: Fees may apply
+        isCabRewardsApplicable:
+          type: boolean
+          example: true
+
+    InternalServerError:
+      required:
+        - error
+        - traceId
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        error:
+          $ref: '#/components/schemas/InternalError'
+        path:
+          type: string
+          example: </sample-api-path>
+        timestamp:
+          type : string
+          format: date-time
+          example: "2023-05-17T06:47:53.094554Z"
+
+    InternalError:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: 500
+        message:
+          type: string
+          example: Sample 500 error
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+

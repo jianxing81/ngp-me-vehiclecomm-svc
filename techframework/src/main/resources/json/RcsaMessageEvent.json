@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/RcsaMessageEvent.schema.json",
+  "title": "RcsaMessageEvent",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.rcsamessageevent.RcsaMessageEvent",
+  "description": "Rcsa Message from ESB Comm",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "RcsaMessageEvent"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ivdNo": {
+      "type": "integer"
+    },
+    "driverId": {
+      "type": "string"
+    },
+    "vehicleId": {
+      "type": "string"
+    },
+    "deviceType": {
+      "enum": [
+        "ANDROID","IPHONE",
+        "MDT"
+      ]
+    },
+    "ipAddr": {
+      "type": "string"
+    },
+    "msgId": {
+      "type": "integer"
+    },
+    "messageSerialNo": {
+      "type": "string"
+    },
+    "requestServiceType": {
+      "type": "string"
+    },
+    "canMessageId": {
+      "type": "string"
+    },
+    "commandVariable": {
+      "type": "string"
+    },
+    "msgContent": {
+      "type": "string"
+    },
+    "messageType": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "deviceType"
+  ]
+}

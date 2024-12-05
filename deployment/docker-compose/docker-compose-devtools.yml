@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  sonar-x86:
+    profiles:
+      - x86
+    image: sonarqube:10.2.1-community
+    container_name: sonar
+    platform: linux/x86_64
+    # Authentication is turned off for out of the box experience while trying out SonarQube
+    # For real use cases delete sonar.forceAuthentication variable or set sonar.forceAuthentication=true
+    environment:
+      - SONAR_FORCEAUTHENTICATION=false
+    ports:
+      - "9000:9000"
+  sonar-arm:
+    profiles:
+      - arm
+    image: sonarqube:9.9.1-community
+    platform: linux/arm64/v8
+    container_name: sonar
+    # Authentication is turned off for out of the box experience while trying out SonarQube
+    # For real use cases delete sonar.forceAuthentication variable or set sonar.forceAuthentication=true
+    environment:
+      - SONAR_FORCEAUTHENTICATION=false
+    ports:
+      - "9000:9000"

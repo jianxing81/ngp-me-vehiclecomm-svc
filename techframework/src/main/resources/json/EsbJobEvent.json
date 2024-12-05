@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/EsbJobEvent.schema.json",
+  "title": "EsbJobEvent",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.esbjobevent.EsbJobEvent",
+  "description": "Job event from ESB Comm",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "EsbJobEvent"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eventIdentifier": {
+      "type": "string"
+    },
+    "eventDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "message": {
+      "type": "string"
+    },
+    "retryId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "eventIdentifier",
+    "message"
+  ]
+}

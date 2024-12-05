@@ -1,0 +1,632 @@
+---
+openapi: 3.0.0
+info:
+  title: Vehicle Comm Service
+  description: Vehicle Comm APIs
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://me.zig.live
+    description: SwaggerHub API Auto Mocking
+paths:
+  ### Vehicle Comm
+  # [POST] Sends PUSH notification to APP
+  /v1.0/vehcomm/drvapp/notify/{userId}:
+    post:
+      tags:
+        - Vehicle Comm
+      summary: Send PUSH notification to APP
+      description: Sends PUSH notification to APP
+      operationId: sendNotification
+      parameters:
+        - in: path
+          name: userId
+          description: The API to send PUSH notification to APP
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+        required: true
+      responses:
+        '204':
+          description: No Content
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/vehcomm/vehicle/track/{event}:
+
+    post:
+      tags:
+        - Vehicle Comm
+      summary: Sends vehicle tracking event
+      description: Send vehicle tracking by event.
+      operationId: sendVehicleTrackingByEvent
+      parameters:
+        - in: path
+          name: event
+          schema:
+            $ref: '#/components/schemas/VehicleTrackEnum'
+          required: true
+      requestBody:
+        required: true
+        description: JSON object of vehicle tracking
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleTrackRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+
+
+  ### VehicleComm
+  # [POST] Send Emergency action to APP or MDT
+  /v1.0/vehcomm/emergency/{action}:
+
+    post:
+      tags:
+        - Vehicle Comm
+      summary: Sends emergency action to APP or MDT
+      description: Send emergency close by action.
+      operationId: sendEmergencyClose
+      parameters:
+        - in: path
+          name: action
+          schema:
+            $ref: '#/components/schemas/EmergencyActionEnum'
+          required: true
+      requestBody:
+        required: true
+        description: JSON object of a emergency action
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyCloseRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/vehcomm/stream/voice/{event}:
+    post:
+      tags:
+        - Vehicle Comm
+      summary: Sends an event to MDT
+      description: Sends an event to MDT for the voice streaming based on the path parameters
+      operationId: SendVoiceStreaming
+      parameters:
+        - in: path
+          name: event
+          schema:
+            $ref: '#/components/schemas/VoiceStreamEnum'
+          required: true
+      requestBody:
+        required: true
+        description: JSON object of a Voice Streaming Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoiceEventRequest'
+      responses:
+        '204':
+          description: No Content
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  ### Vehicle Comm
+  # [POST] Sends ivd ping message
+  /v1.0/vehcomm/ivd/ping:
+    post:
+      tags:
+        - Vehicle Comm
+      summary: Sends ivd ping message
+      description: Sends ivd ping message
+      operationId: sendPingMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IvdPingMessage'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/vehcomm/ivd/{action}:
+    post:
+      parameters:
+        - name: action
+          in: path
+          description: Mdt action
+
+          schema:
+            $ref: '#/components/schemas/MDTActionEnum'
+          required: true
+      tags:
+        - Vehicle Comm
+      summary: MDT event
+      description: MDT action
+      operationId: mdtAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdtRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdtResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/vehcomm/byte-to-bean/{eventId}:
+    post:
+      parameters:
+        - name: eventId
+          in: path
+          description: Event ID
+          required: true
+          schema:
+            type: string
+      tags:
+        - Vehicle Comm
+      summary: Byte to Bean Converter
+      description: Internal API to perform byte to bean conversion
+      operationId: byteToBeanConverter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ByteToBeanRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  /v1.0/vehcomm/retry/{eventName}:
+    post:
+      tags:
+        - Retry
+      summary: Retry vehicle comm events
+      description: Retries the failed vehicle comm related events
+      operationId: retryEvents
+      parameters:
+        - in: path
+          name: eventName
+          schema:
+            $ref: '#/components/schemas/RetryableEvents'
+          description: Events which can be retried
+          required: true
+      responses:
+        '200':
+          description: Successfully retried the event
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+components:
+  schemas:
+    RetryableEvents:
+      type: string
+      enum:
+        - REPORT_TRIP_INFO_NORMAL
+    IvdPingMessage:
+      required:
+        - refNo
+        - seqNo
+        - ipAddress
+        - ivdNo
+      type: object
+      properties:
+        refNo:
+          type: integer
+        seqNo:
+          type: integer
+        ipAddress:
+          type: string
+          minLength: 1
+          maxLength: 15
+          example: 10.2.140.40
+        ivdNo:
+          type: integer
+
+    NotificationRequest:
+      required:
+        - notificationType
+        - placeHolder
+      type: object
+      properties:
+        notificationType:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: job_confirmed
+        placeHolder:
+          type: object
+
+    BadRequestError:
+      required:
+        - error
+        - traceId
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "123456"
+        path:
+          type: string
+          example: </sample-api-path>
+        error:
+          $ref: '#/components/schemas/ErrorData'
+        timestamp:
+          type: string
+          format: date-time
+          example: 2024-03-22T06:00:20.207Z
+
+    ErrorData:
+      required:
+        - code
+        - message
+        - data
+      type: object
+      properties:
+        code:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request content"
+        data:
+          type: object
+          properties:
+            fields:
+              type: array
+              items:
+                $ref: '#/components/schemas/FieldItem'
+
+    FieldItem:
+      required:
+        - name
+        - message
+      properties:
+        name:
+          type: string
+          example: "error field name"
+        message:
+          type: array
+          items:
+            type: string
+
+    NotFoundResponse:
+      required:
+        - error
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: 12345678
+        path:
+          type: string
+          example: /request/to/path
+        error:
+          $ref: '#/components/schemas/Error'
+        timestamp:
+          type: string
+          format: date-time
+          example: 2024-03-22T06:00:20.210Z
+
+    ErrorNotFound:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: string
+          example: Not found exception
+        message:
+          type: string
+          example: Invalid request content
+
+    Error:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: string
+          example: BadRequest/InternalServerError
+        message:
+          type: string
+          example: Invalid request content
+
+    InternalServerErrorResponse:
+      required:
+        - error
+        - traceId
+        - path
+        - timestamp
+      type: object
+      properties:
+        traceId:
+          type: string
+          example: "12343132"
+        path:
+          type: string
+          example: </sample-api-path>
+        error:
+          $ref: '#/components/schemas/Error'
+        timestamp:
+          type: string
+          format: date-time
+          example: 1699854242466
+    VehicleTrackEnum:
+      type: string
+      enum:
+        - START
+        - STOP
+
+    VoiceStreamEnum:
+      type: string
+      enum:
+        - START
+        - STOP
+    VehicleTrackRequest:
+      type: object
+      required:
+        - id
+        - ipAddress
+        - ivdNo
+      properties:
+        id:
+          type: integer
+          example: 1
+        interval:
+          type: integer
+          example: 12
+        duration:
+          type: integer
+          example: 10
+        ipAddress:
+          type: string
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace
+          minLength: 1
+          maxLength: 15
+          example: 10.2.140.40
+          description: ip address.
+        ivdNo:
+          type: integer
+          example: 1121
+    EmergencyActionEnum:
+      type: string
+      enum:
+        - CLOSED
+    EmergencyCloseRequest:
+      type: object
+      required:
+        - ipAddress
+        - emergId
+        - id
+        - mobileId
+        - ivdNo
+      properties:
+        emergId:
+          type: string
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace
+          minLength: 1
+          example: "TO_IVD_EMERGENCY_CLOSED"
+          description: Emergency identifier.
+        id:
+          type: integer
+          example: 1
+          description: id.
+        mobileId:
+          type: integer
+          example: 1027
+          description: mobile id
+        ipAddress:
+          type: string
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with at least one non-whitespace
+          minLength: 1
+          maxLength: 15
+          example: 10.2.140.40
+          description: ip address.
+        ivdNo:
+          type: integer
+          example: 1121
+          description: ivd number
+
+
+
+
+    VoiceEventRequest:
+      type: object
+      required:
+        - id
+        - ipAddress
+        - ivdNo
+        - duration
+      properties:
+        ivdNo:
+          type: integer
+          example: 1211
+        ipAddress:
+          type: string
+          pattern: '^\S.*$' # Regular expression to match any non-empty string with atleast one non-whitespace
+          minLength: 1
+          maxLength: 15
+          example: 10.2.140.40
+          description: ip address.
+        id:
+          type: integer
+          example: 22
+        duration:
+          type: integer
+          example: 10
+    MDTActionEnum:
+      type: string
+      enum:
+        - LOGON_REQUEST
+        - LOGOUT_REQUEST
+        - POWER_UP
+        - IVD_HARDWARE_INFO
+    MdtRequest:
+      type: object
+      required:
+        - byteString
+        - eventDate
+      properties:
+        byteString:
+          type: string
+          example: "01 AB CD 4F 6A"
+        eventDate:
+          type: string
+          format: date-time
+          example: "2023-05-17T06:47:53.094554Z"
+    MdtResponse:
+      type: object
+      properties:
+        byteString:
+          type: string
+          example: "47 6f 20 55 43 44"
+        eventDate:
+          type: string
+          format: date-time
+          example: "2024-05-17T06:47:53.094554Z"
+    ByteToBeanRequest:
+      type: object
+      properties:
+        byteString:
+          type: string
+          example: "0A 3F 4D 8E A1"
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

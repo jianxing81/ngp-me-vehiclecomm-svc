@@ -1,0 +1,42 @@
+version: 0.2
+
+######################################
+# DEV TEAM CAN MODIFY ENV BLOCK
+# For App specific variable, Dev team can CRUD themself in this file env block.
+# For more detail you can look into this guide: https://blog.shikisoft.com/define-environment-vars-aws-codebuild-buildspec/
+######################################
+env:
+  # Plain text variable configuration (Dev team can modify this)
+  variables:
+    CPU: 4096
+    APP_CPU: 3072
+    # Note that 2 sidecars are injected -> log-router and datakit-agent
+    SIDECAR_CPU: 512
+    MEMORY: 8192
+    APP_MEMORY: 6144
+    # Note that 2 sidecars are injected -> log-router and datakit-agent
+    SIDECAR_MEMORY: 1024
+    CONTAINER_PORT: 8080
+
+  # If you want to add variable from parameter store, do as follow:
+  # parameter-store:
+  #   S3_BUCKET: "my_s3_bucket"
+  #   ORG_BUCKET: "/my_org/s3_bucket"
+  #   DB_USERNAME: "db_username"
+
+  # If you want to add app specific secret environment, do as follow:
+  # secrets-manager:
+  #   ParameterName: "<secret-name>:<secret-key>"
+
+
+phases:
+  ######################################
+  # DEV TEAM CAN MODIFY THIS BUILD PHASE ACCORDING TO THEIR APP REQUIREMENT
+  ######################################
+  build:
+    on-failure: ABORT
+    commands:
+      ##############
+      # MODIFY YOUR DOCKER BUILD CODE HERE:
+      - echo ________ Running the rollback command ________
+      - ./gradlew rollback -PliquibaseCommandValue="$LIQUIBASE_VERSION" -Purl=$JDBC_CONNECTION -Pusername=$DB_USERNAME -Ppassword=$DB_PASSWORD

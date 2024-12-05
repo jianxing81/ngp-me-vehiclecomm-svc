@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "http://example.com/ProduceRcsaEvent.schema.json",
+  "title": "ProduceRcsaEvent",
+  "javaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.producercsaevent.ProduceRcsaEvent",
+  "description": " Produce Rcsa event",
+  "extends": {
+    "existingJavaType": "com.cdg.pmg.ngp.me.vehiclecomm.techframework.messaging.listener.models.ParentRequest",
+    "type": "object"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "eventType": {
+      "const": "ProduceRcsaEvent"
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ivdNo": {
+      "type": "integer"
+    },
+    "emergencyId": {
+      "type": "string"
+    },
+    "voiceStream": {
+      "type": "string"
+    },
+    "vehicleId": {
+      "type": "string"
+    },
+    "rcsaEvent": {
+      "$ref": "#/definitions/rcsaEventEnum"
+    },
+    "message": {
+      "$ref": "#/definitions/message"
+    },
+    "driverId": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "rcsaEventEnum": {
+      "enum": [
+        "VOICE_STREAMING_MESSAGE",
+        "FALSE_ALARM",
+        "EMERGENCY_REPORT",
+        "EMERGENCY_INITIATED","RESPOND_TO_STRUCTURE_MESSAGE","RESPOND_TO_SIMPLE_MESSAGE",
+        "SEND_MESSAGE"
+      ]
+    },
+    "message": {
+      "type": "object",
+      "properties": {
+        "selection": {
+          "type": "integer"
+        },
+        "uniqueMsgId": {
+          "type": "string"
+        },
+        "msgContent": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
